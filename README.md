@@ -6,6 +6,6 @@ Các function đã có của peer
 
 Trước khi chạy phải chỉnh Ip để phù hợp với máy mình
 
-Info_Peer.local.IP = "YourHostAddress" trong procedure.java của các client 
+Info_Peer.local.IP = "YourHostAddress" trong procedure.java của các client, nếu chạy client với server cùng trên một máy thì dùng "localhost" hoặc "127.0.0.1" cũng được
 
 Dùng ipconfig để biết được Ip address của máy mình
