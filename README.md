@@ -13,6 +13,7 @@ discover: sau khi enter dòng lệnh sẽ yêu cầu nhập tên của peer (pee
 ping: sau khi enter dòng lệnh sẽ yêu cầu nhập tên của peer. (chỉ có thể ping peer nếu peer đã ít nhất 1 lần register file), ở phía client nhận được thông báo khi server ping
 
 ![image](https://github.com/Loskarr/Filesharing/assets/143611763/d9647f26-9f6a-4031-b1aa-4323859a862e)
+
 ![image](https://github.com/Loskarr/Filesharing/assets/143611763/c18ef5e7-1934-48cb-978f-727132aa759a)
 
 vì giao tiếp ping thực hiện ở 1 port nên tôi đã disable ping của peer3 để có thể test ping command trên cùng 1 máy 
