@@ -1,9 +1,12 @@
 # Filesharing
 Các function đã có của peer
-1. Register all file: register file với fname = lname
-2. Search a file: tìm kiếm file theo fname, chọn source download
-3. Register a file: register file cụ thể bằng cách nhập lname, sau đó chọn fname
-4. exit: ngừng client
+1. Signin/Signup yêu cấu client nhập tên và IP address ( ko có password )
+nếu tên không tồn tại thì tên và Ip address sẽ được server lưu lại và thông báo sign-up success
+nếu tên tồn tại thì Ip address sẽ được server cập nhật cho tên đó và thông báo sign-in success
+3. 1. Register all file: register file với fname = lname
+4. Search a file: tìm kiếm file theo fname, chọn source download
+5. Register a file: register file cụ thể bằng cách nhập lname, sau đó chọn fname
+6. exit: ngừng client
 
 Các function đã có của server
 
@@ -23,6 +26,7 @@ nếu chạy peer3 khác máy với peer4 thì có thể enable ping của peer3
 
 ![image](https://github.com/Loskarr/Filesharing/assets/143611763/c218e4b9-aa32-4bfa-b1ab-452f1ab815db)
 
+userlist: in ra danh sách các user đã đăng ký
 
 quit: ngừng server
 
