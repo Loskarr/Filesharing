@@ -285,7 +285,7 @@ public class Peer {
 	 //   Monitor_file(Info_Peer.local.path,peerfunction);
 	    ServerSocket server = null;
 		PingClient pingclient = new PingClient(Info_Peer.local.pingPort);
-		//pingclient.start();
+		pingclient.start();
 		WrThread wrThread = new WrThread(Info_Peer.local.path, peerfunction);
 		wrThread.start();
 	    try{
@@ -365,6 +365,7 @@ class DThread extends Thread{
         }  
 	}
 }
+
 
 class PingClient extends Thread {
     private int port;

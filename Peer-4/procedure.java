@@ -15,13 +15,13 @@ public class procedure {
 		try{
 			
 			Info_Peer.local.clientPort = 8010;
-			Info_Peer.local.serverPort = 9210;
-			Info_Peer.local.downloadPort = 10210;
+			Info_Peer.local.serverPort = 9310;
+			Info_Peer.local.downloadPort = 10310;
 			
 			// Set the specific IP address
-			Info_Peer.local.IP = "192.168.1.7";
+			Info_Peer.local.IP = "192.168.1.6";
 			Info_Peer.local.serverIP = "192.168.1.6";
-			Info_Peer.local.name = "peer3";
+			Info_Peer.local.name = "peer4";
 
 			// You can keep the following lines to set the hostname and ID
 			//Info_Peer.local.name = InetAddress.getByName(Info_Peer.local.IP).getHostName();
