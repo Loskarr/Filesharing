@@ -19,7 +19,7 @@ public class procedure {
 			Info_Peer.local.downloadPort = 10210;
 			
 			// Set the specific IP address
-			Info_Peer.local.IP = "192.168.1.7"; //IP address of the machine that run this client
+			Info_Peer.local.IP = "192.168.1.6"; //IP address of the machine that run this client
 			Info_Peer.local.serverIP = "192.168.1.6"; //IP address of the machine that run server
 			Info_Peer.local.name = "peer3";
 
