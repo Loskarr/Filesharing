@@ -11,18 +11,20 @@ import java.util.Date;
 
 public class procedure {
 
-	public void intialize(){
+	public void initialize(){
 		try{
 			
 			Info_Peer.local.clientPort = 8010;
-			Info_Peer.local.serverPort = 9310;
-			Info_Peer.local.downloadPort = 10310;
+			Info_Peer.local.serverPort = 9210;
+			Info_Peer.local.downloadPort = 10210;
 			
 			// Set the specific IP address
-			Info_Peer.local.IP = "192.168.1.6";
+			Info_Peer.local.IP = "192.168.1.7";
+			Info_Peer.local.serverIP = "192.168.1.6";
+			Info_Peer.local.name = "peer3";
 
 			// You can keep the following lines to set the hostname and ID
-			Info_Peer.local.name = InetAddress.getByName(Info_Peer.local.IP).getHostName();
+			//Info_Peer.local.name = InetAddress.getByName(Info_Peer.local.IP).getHostName();
 			Info_Peer.local.ID = Info_Peer.local.IP + ":" + Info_Peer.local.serverPort;
 		}catch(Exception e){
 			e.printStackTrace();
@@ -61,10 +63,10 @@ public class procedure {
 		
 			writer = new FileWriter("./peerLog.txt",true);
 			Info_Peer.local.fileList.remove(filename);		
-			System.out.println("File "+filename + " is unDo_registered!");
+			System.out.println("File "+filename + " is unregistered!");
 			DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			String time = df.format(new Date());
-			writer.write(time + "\t\tFile "+filename + " is unDo_registered on the index server!\r\n");
+			writer.write(time + "\t\tFile "+filename + " is unregistered on the index server!\r\n");
 			writer.close();	
 
 		}catch(Exception e){

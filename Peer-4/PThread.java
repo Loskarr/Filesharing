@@ -150,7 +150,7 @@ class clientThread extends Thread{
 			String msg = null;
 			
 			while((msg = br.readLine())!=null){
-				System.out.println(msg+"\n");
+				//System.out.println(msg+"\n");
 				StringTokenizer st = new StringTokenizer(msg);
 				String command = st.nextToken();
 				String fileName = st.nextToken();
