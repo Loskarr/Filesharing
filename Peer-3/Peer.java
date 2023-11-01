@@ -42,10 +42,11 @@ public class Peer {
 			// register to the local file
 			
 			peerfunction.Do_register(Info_Peer.local.ID, fileName , serverName);
-			
+			System.out.println(Info_Peer.local.ID);
 			// register to the server end
 			// Send register message
-			sb.append(Info_Peer.local.ID);
+			sb.append(Info_Peer.local.name);
+			sb.append(" "+Info_Peer.local.ID);
 			sb.append(" "+fileName);
 			sb.append(" "+serverName);
 			pw.println(sb.toString());
@@ -141,10 +142,6 @@ public class Peer {
 
 	public static void Thread_for_unregister(String fileName, procedure peerfunction){
 		Socket socket = null;
-		
-		System.out.println("in");
-
-
 		StringBuffer sb = new StringBuffer("unregister ");
 		try{			
 			peerSocket peersocket = new peerSocket();
@@ -157,7 +154,8 @@ public class Peer {
 			
 			// Unregister to the server end
 			// Send unregister message
-			sb.append(Info_Peer.local.ID);
+			sb.append(Info_Peer.local.name);
+			sb.append(" "+Info_Peer.local.ID);
 			sb.append(" "+fileName);
 			
 			pw.println(sb.toString());
@@ -194,6 +192,7 @@ public class Peer {
 			
 			// Send search message
 			sb.append(Info_Peer.local.ID);
+			sb.append(Info_Peer.local.name);
 			sb.append(" "+fileName);
 			pw.println(sb.toString());
 			
@@ -229,7 +228,6 @@ public class Peer {
 	 *  Used to download file from other clients
 	 */
 	public void download(String fileName, procedure peerfunction, int pn){
-		System.out.println(fileName+" "+Info_Peer.dest.destLname.get(pn)+"\n");
 		String IP = null;
 		String folder = null;
 		int port = 0;
@@ -283,10 +281,13 @@ public class Peer {
 	
 	public static void main(String args[])throws IOException{
 	    procedure peerfunction = new procedure();
-	    peerfunction.intialize();
+	    peerfunction.initialize();
 	 //   Monitor_file(Info_Peer.local.path,peerfunction);
 	    ServerSocket server = null;
+		PingClient pingclient = new PingClient(Info_Peer.local.pingPort);
+		pingclient.start();
 		WrThread wrThread = new WrThread(Info_Peer.local.path, peerfunction);
+		wrThread.start();
 	    try{
 	    	server = new ServerSocket(Info_Peer.local.serverPort);
 	    	System.out.println("\n Peer  started!");
@@ -365,6 +366,29 @@ class DThread extends Thread{
 	}
 }
 
+class PingClient extends Thread {
+    private int port;
+
+    public PingClient(int port) {
+        this.port = port;
+    }
+
+    @Override
+    public void run() {
+        try (ServerSocket serverSocket = new ServerSocket(port)) {
+
+            while (true) {
+                try (Socket clientSocket = serverSocket.accept()) {
+                    System.out.println("Received ping request from Server");
+
+                    // Handle the ping request here (e.g., respond or perform some action)
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
 /*
  *  Watch file
  *  Listening to the local file folder
@@ -378,8 +402,6 @@ class WrThread extends Thread {
 	public WrThread(String path,procedure peerfunction){
 		this.path = path;
 		this.peerfunction = peerfunction;
-		
-		start();
 	}
 	
 	public void run(){
@@ -402,7 +424,7 @@ class WrThread extends Thread {
 				}
 			}
 			
-		}, 1000, 100);
+		}, 2000, 200);
 		     
 	}
 }
@@ -439,12 +461,12 @@ class peerSocket{
 	private procedure pf = new procedure();
 
 	public peerSocket()throws IOException{
-		pf.intialize();
-		socket = new Socket(Info_Peer.local.IP,Info_Peer.local.clientPort);
+		pf.initialize();
+		socket = new Socket(Info_Peer.local.serverIP,Info_Peer.local.clientPort);
 	}
 	
 	public peerSocket(String IP, int port)throws IOException{
-		pf.intialize();
+		pf.initialize();
 		Info_Peer.local.clientPort = port;
 		socket = new Socket(IP,Info_Peer.local.clientPort);
 	}

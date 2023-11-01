@@ -9,7 +9,9 @@ public class Info_Peer {
 		public static int serverPort = 9210;
 		public static int clientPort = 8010;
 		public static int downloadPort = 10210;
-		public static String IP = "";	
+		public static int pingPort = 8510;
+		public static String IP = "";
+		public static String serverIP = "";	
 		public static String name = "";
 		public static String ID = "";
 		public static String path = "./Look";
