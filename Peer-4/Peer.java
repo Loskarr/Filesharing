@@ -66,17 +66,53 @@ public class Peer {
 		}
 	}
 
+	public static void Thread_for_signup(String name, String IP, procedure peerfunction){
+		Socket socket = null;
+		StringBuffer sb = new StringBuffer("signup ");
+		try{			
+			peerSocket peersocket = new peerSocket();
+			socket = peersocket.socket;
+			BufferedReader br = peersocket.getReader(socket);
+			PrintWriter pw = peersocket.getWriter(socket);
+			sb.append(name);
+			sb.append(" "+IP);
+			sb.append(" connect");
+			sb.append(" request");
+			pw.println(sb.toString());
+			System.out.println(br.readLine());
+
+		}catch (IOException e) 
+		{
+			e.printStackTrace();
+		}
+		finally{
+			try{
+				if(socket!=null){
+					socket.close();
+				}
+			}catch(IOException e){
+				e.printStackTrace();
+			}
+		}
+	}
+
 
 	public void do_it(procedure peerfunction)throws IOException{
 		
 		boolean exit = false;
 		// Store file name
 		String fileName = null;
-		String serverName = null;	
+		String serverName = null;
 		
 		BufferedReader localReader = new BufferedReader(new InputStreamReader(System.in));
-		
-		// Usage Interface
+
+		System.out.println("Enter peer name:");
+		Info_Peer.local.name = localReader.readLine();
+		System.out.println("Enter this machine IP address:");
+		Info_Peer.local.IP = localReader.readLine();
+		System.out.println(Info_Peer.local.name+" "+Info_Peer.local.IP);
+		Thread_for_signup(Info_Peer.local.name, Info_Peer.local.IP, peerfunction);
+		//Usage Interface
 		while(!exit)
 		{
 			System.out.println("\n1 Register all file\n2 Search a file\n3 Register a file\n4 Exit");
@@ -282,7 +318,7 @@ public class Peer {
 	public static void main(String args[])throws IOException{
 	    procedure peerfunction = new procedure();
 	    peerfunction.initialize();
-	 //   Monitor_file(Info_Peer.local.path,peerfunction);
+	 // Monitor_file(Info_Peer.local.path,peerfunction);
 	    ServerSocket server = null;
 		PingClient pingclient = new PingClient(Info_Peer.local.pingPort);
 		pingclient.start();
