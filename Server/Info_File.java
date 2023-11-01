@@ -2,6 +2,7 @@
 
 public class Info_File {
 	
+	private String peerName;
 	private String peerID;
 	private String lName;
 	private String fName;
@@ -10,12 +11,17 @@ public class Info_File {
 		
 	}
 	
-	public Info_File(String peerID, String lName, String fName){
+	public Info_File(String peerName,String peerID, String lName, String fName){
+		this.peerName = peerName;
 		this.peerID = peerID;
 		this.lName = lName;
 		this.fName = fName;
 	}
 	
+	public String getName(){
+		return peerName;
+	}
+
 	public String getID(){
 		return peerID;
 	}
@@ -27,6 +33,10 @@ public class Info_File {
 		return fName;
 	}
 	
+	public void setPeerName(String peerID){
+		this.peerID = peerID;
+	}
+
 	public void setID(String peerID){
 		this.peerID = peerID;
 	}

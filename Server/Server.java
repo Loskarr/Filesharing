@@ -2,6 +2,8 @@
 
 import java.io.*;
 import java.net.*;
+import java.util.Map;
+import java.util.ArrayList;
 
 
 
@@ -34,22 +36,79 @@ class indexServer{
 	}
 }
 
+
+
 public class Server {
-	
+	private boolean isRunning = true;
+
 	public void service() throws IOException{
 		method serverfunction = new method();
 		ServerSocket serverSocket;
 		indexServer indexserver = new indexServer();
 		serverSocket = indexserver.serversocket;
-		try{
-			Socket socket = null;
-			while(true){
-				socket = serverSocket.accept();
-			System.out.println("New connection accepted! ");
-				new SThread(socket,serverfunction);
+		System.out.println("Command:discover, ping, quit");
+		Thread commandThread = new Thread(() -> {
+			try {
+				BufferedReader localReader = new BufferedReader(new InputStreamReader(System.in));
+				while (isRunning) {
+					String command = localReader.readLine();
+					// Handle the command as needed
+					if (command.equals("quit")) {
+						// Gracefully shutdown the server
+						isRunning = false;
+						serverSocket.close();
+						System.out.println("Server stopped.");
+					} 
+					else if (command.equals("discover")) {
+						System.out.print("Enter the Peer name: ");
+						// Gracefully shutdown the server
+						String peerName = localReader.readLine();
+						ArrayList<String> fileList = serverfunction.discoverFileList(peerName);
+						// Print the fileList to the server console
+						System.out.println("File List for Peer " + peerName + ":");
+						for (String fileName : fileList) {
+							System.out.println(fileName);
+						}
+					} 
+					else if (command.equals("ping")) {
+						// Gracefully shutdown the server
+						System.out.print("Enter the name of the peer to ping: ");
+						String name = localReader.readLine();
+						String ipAddress = serverfunction.toIP.get(name);
+						int defaultPingport = 8510;
+						boolean isOnline = serverfunction.pingPeer(ipAddress,defaultPingport);
+						if (isOnline) {
+							System.out.println("Peer " + name +  " at IP " + ipAddress + " is online.");
+						} else {
+							System.out.println("Peer " + name + " at IP " + ipAddress + " is offline.");
+						}
+					} else {
+						System.out.println("Unknown command: " + command);
+					}
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-		}catch(Exception e){
-			e.printStackTrace();
+		});
+		commandThread.start();
+
+		try {
+			Socket socket = null;
+			while (isRunning) {
+				socket = serverSocket.accept();
+				System.out.println("New connection accepted!");
+				new SThread(socket, serverfunction);
+			}
+		} catch (Exception e) {
+			if (!(e instanceof SocketException && e.getMessage().equalsIgnoreCase("Socket closed"))) {
+				e.printStackTrace();
+			}
+		} finally {
+			try {
+				serverSocket.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		
 	}

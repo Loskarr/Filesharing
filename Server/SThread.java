@@ -44,6 +44,7 @@ public class SThread extends Thread{
 				StringTokenizer st = new StringTokenizer(msg);
 				System.out.println(msg);
 				String command = st.nextToken();
+				String name = st.nextToken();
 				String ID = st.nextToken();
 				String lName = st.nextToken();
 				String fName= null;
@@ -51,10 +52,10 @@ public class SThread extends Thread{
 				else fName = lName ;
 				
 				if("register".equals(command)){
-					serverfunction.registery(ID, lName, fName);
+					serverfunction.registery(name, ID, lName, fName);
 				}
 				else if("unregister".endsWith(command)){
-					serverfunction.unregistery(ID, lName);
+					serverfunction.unregistery(name, ID, lName);
 					
 				}else if("search".equals(command)){
 					ArrayList<String> peerList = new ArrayList<String>();
