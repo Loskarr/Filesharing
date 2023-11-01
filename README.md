@@ -3,7 +3,7 @@ Các function đã có của peer
 1. Signin/Signup yêu cấu client nhập tên và IP address ( ko có password )
 nếu tên không tồn tại thì tên và Ip address sẽ được server lưu lại và thông báo sign-up success
 nếu tên tồn tại thì Ip address sẽ được server cập nhật cho tên đó và thông báo sign-in success
-3. 1. Register all file: register file với fname = lname
+3. Register all file: register file với fname = lname
 4. Search a file: tìm kiếm file theo fname, chọn source download
 5. Register a file: register file cụ thể bằng cách nhập lname, sau đó chọn fname
 6. exit: ngừng client
