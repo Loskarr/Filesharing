@@ -105,7 +105,7 @@ public class Peer {
 							{
 								System.out.println("\nChoose source number (0-...)");
 								int pn = Integer.parseInt(localReader.readLine());
-								download(fileName, peerfunction, 0);					
+								download(fileName, peerfunction, pn);					
 								break;
 							}
 						default:
