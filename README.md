@@ -28,13 +28,11 @@ quit: ngừng server
 
 ![image](https://github.com/Loskarr/Filesharing/assets/143611763/2214a70d-d5d8-4fed-a5d6-1ec14f79a10d)
 
-Error control đã thực hiện
+Extend function đã thực hiện
 
-phát hiện command không tồn tại
+thông báo command không tồn tại
 
 ![image](https://github.com/Loskarr/Filesharing/assets/143611763/c4e02ff8-20f9-498d-b413-77ee84aeea12)
-
-Extend function đã thực hiện
 
 phát hiện file đã bị xóa
 
