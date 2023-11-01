@@ -33,9 +33,11 @@ phát hiện command không tồn tại
 ![image](https://github.com/Loskarr/Filesharing/assets/143611763/c4e02ff8-20f9-498d-b413-77ee84aeea12)
 
 phát hiện file đã bị xóa
+
 phía client 
 
 ![image](https://github.com/Loskarr/Filesharing/assets/143611763/30e79599-dceb-4882-b05f-80a3011ae4f8)
+
 phía server 
 
 ![image](https://github.com/Loskarr/Filesharing/assets/143611763/d0d22c21-c6a3-4504-9570-1553f750f370)
