@@ -46,7 +46,7 @@ public class Server {
 		ServerSocket serverSocket;
 		indexServer indexserver = new indexServer();
 		serverSocket = indexserver.serversocket;
-		System.out.println("Command:discover, ping, quit");
+		System.out.println("Command: discover, ping, quit");
 		Thread commandThread = new Thread(() -> {
 			try {
 				BufferedReader localReader = new BufferedReader(new InputStreamReader(System.in));
