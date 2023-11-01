@@ -18,6 +18,7 @@ ping: sau khi enter dòng lệnh sẽ yêu cầu nhập tên của peer. (chỉ 
 ![image](https://github.com/Loskarr/Filesharing/assets/143611763/c18ef5e7-1934-48cb-978f-727132aa759a)
 
 vì giao tiếp ping thực hiện ở 1 port nên tôi đã disable ping của peer3 để có thể test ping command trên cùng 1 máy 
+
 nếu chạy peer3 khác máy với peer4 thì có thể enable ping của peer3 để có thể test, chỉ cần xóa dấu comment trong phần main của Peer.java
 
 ![image](https://github.com/Loskarr/Filesharing/assets/143611763/c218e4b9-aa32-4bfa-b1ab-452f1ab815db)
