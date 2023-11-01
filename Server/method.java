@@ -30,10 +30,10 @@ public class method {
 	public void registery(String peerName, String peerID, String lName, String fName){
 		// TODO Auto-generated method stub
 		registerThread register = new registerThread(peerName, peerID, lName, fName);
-		String[] parts = peerID.split(":");
-		String ipAddress = parts[0];
+		//String[] parts = peerID.split(":");
+		//String ipAddress = parts[0];
 		// Map the peerName to the IP address
-		toIP.put(peerName, ipAddress);
+		//toIP.put(peerName, ipAddress);
 		//System.out.println(peerName+" "+ipAddress+"\n");
 		Thread thread = new Thread(register);
 		thread.start();

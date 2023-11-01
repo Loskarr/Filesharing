@@ -46,14 +46,21 @@ public class Server {
 		ServerSocket serverSocket;
 		indexServer indexserver = new indexServer();
 		serverSocket = indexserver.serversocket;
-		System.out.println("Command: discover, ping, quit");
+		System.out.println("Command: discover, ping, userlist, quit");
 		Thread commandThread = new Thread(() -> {
 			try {
 				BufferedReader localReader = new BufferedReader(new InputStreamReader(System.in));
 				while (isRunning) {
 					String command = localReader.readLine();
 					// Handle the command as needed
-					if (command.equals("quit")) {
+					if (command.equals("userlist")) {
+						// Gracefully shutdown the server
+						System.out.println("User Data:");
+						for (Map.Entry<String, String> entry : serverfunction.toIP.entrySet()) {
+                            System.out.println(entry.getKey() + " : " + entry.getValue());
+						}
+					} 
+					else if (command.equals("quit")) {
 						// Gracefully shutdown the server
 						isRunning = false;
 						serverSocket.close();

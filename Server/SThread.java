@@ -50,13 +50,23 @@ public class SThread extends Thread{
 				String fName= null;
 				if( st.hasMoreTokens()) fName = st.nextToken();
 				else fName = lName ;
-				
-				if("register".equals(command)){
+				if("signup".equals(command)){
+					if (serverfunction.toIP.containsKey(name)) {
+						//writer.println("Sign-in Successful");
+						System.out.println("Sign-in Successful: " + name);
+						pw.println("Sign-in Successful");
+					} else {
+						serverfunction.toIP.put(name, ID);
+						//writer.println("Sign-up Successful");
+						System.out.println("Sign-up Successful: " + name);
+						pw.println("Sign-up Successful");
+					}
+				}
+				else if("register".equals(command)){
 					serverfunction.registery(name, ID, lName, fName);
 				}
 				else if("unregister".endsWith(command)){
 					serverfunction.unregistery(name, ID, lName);
-					
 				}else if("search".equals(command)){
 					ArrayList<String> peerList = new ArrayList<String>();
 					//find the peer list that have that file
