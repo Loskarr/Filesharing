@@ -42,7 +42,7 @@ public class Peer {
 			// register to the local file
 			
 			peerfunction.Do_register(Info_Peer.local.ID, fileName , serverName);
-			System.out.println(Info_Peer.local.ID);
+			
 			// register to the server end
 			// Send register message
 			sb.append(Info_Peer.local.name);
@@ -191,8 +191,8 @@ public class Peer {
 			PrintWriter pw = peersocket.getWriter(socket);
 			
 			// Send search message
-			sb.append(Info_Peer.local.ID);
 			sb.append(Info_Peer.local.name);
+			sb.append(" "+Info_Peer.local.ID);
 			sb.append(" "+fileName);
 			pw.println(sb.toString());
 			
@@ -285,7 +285,7 @@ public class Peer {
 	 //   Monitor_file(Info_Peer.local.path,peerfunction);
 	    ServerSocket server = null;
 		PingClient pingclient = new PingClient(Info_Peer.local.pingPort);
-		pingclient.start();
+		//pingclient.start(); 
 		WrThread wrThread = new WrThread(Info_Peer.local.path, peerfunction);
 		wrThread.start();
 	    try{
