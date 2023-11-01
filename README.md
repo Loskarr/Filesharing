@@ -6,6 +6,7 @@ Các function đã có của peer
 4. exit: ngừng client
 
 Các function đã có của server
+
 discover: sau khi enter dòng lệnh sẽ yêu cầu nhập tên của peer (peer-4 là peer4, peer-3 là peer3), đầu ra dưới dạng lname as fname
 
 ![image](https://github.com/Loskarr/Filesharing/assets/143611763/307b5f56-a72c-4a01-a464-565fdbc4e839)
