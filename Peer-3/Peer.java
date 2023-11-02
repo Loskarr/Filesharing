@@ -227,7 +227,7 @@ public class Peer {
 			PrintWriter pw = peersocket.getWriter(socket);
 			
 			// Send search message
-			sb.append(Info_Peer.local.name);
+			sb.append("request");
 			sb.append(" "+Info_Peer.local.ID);
 			sb.append(" "+fileName);
 			pw.println(sb.toString());
