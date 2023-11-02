@@ -103,7 +103,7 @@ public class Server {
 			Socket socket = null;
 			while (isRunning) {
 				socket = serverSocket.accept();
-				System.out.println("New connection accepted!");
+				//System.out.println("New connection accepted!");
 				new SThread(socket, serverfunction);
 			}
 		} catch (Exception e) {

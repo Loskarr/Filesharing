@@ -42,7 +42,7 @@ public class SThread extends Thread{
 			
 			while((msg = br.readLine())!=null){
 				StringTokenizer st = new StringTokenizer(msg);
-				System.out.println(msg);
+				//System.out.println(msg);
 				String command = st.nextToken();
 				String name = st.nextToken();
 				String ID = st.nextToken();
