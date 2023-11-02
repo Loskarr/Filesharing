@@ -52,23 +52,19 @@ public class Server {
 				BufferedReader localReader = new BufferedReader(new InputStreamReader(System.in));
 				while (isRunning) {
 					String command = localReader.readLine();
-					// Handle the command as needed
 					if (command.equals("userlist")) {
-						// Gracefully shutdown the server
 						System.out.println("User Data:");
 						for (Map.Entry<String, String> entry : serverfunction.toIP.entrySet()) {
                             System.out.println(entry.getKey() + " : " + entry.getValue());
 						}
 					} 
 					else if (command.equals("quit")) {
-						// Gracefully shutdown the server
 						isRunning = false;
 						serverSocket.close();
 						System.out.println("Server stopped.");
 					} 
 					else if (command.equals("discover")) {
 						System.out.print("Enter the Peer name: ");
-						// Gracefully shutdown the server
 						String peerName = localReader.readLine();
 						ArrayList<String> fileList = serverfunction.discoverFileList(peerName);
 						// Print the fileList to the server console
@@ -78,7 +74,6 @@ public class Server {
 						}
 					} 
 					else if (command.equals("ping")) {
-						// Gracefully shutdown the server
 						System.out.print("Enter the name of the peer to ping: ");
 						String name = localReader.readLine();
 						String ipAddress = serverfunction.toIP.get(name);
