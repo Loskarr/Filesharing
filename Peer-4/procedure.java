@@ -21,7 +21,7 @@ public class procedure {
 			// Set the specific IP address
 			Info_Peer.local.IP = "192.168.1.6";
 			Info_Peer.local.serverIP = "192.168.1.6";
-			Info_Peer.local.name = "peer4";
+			Info_Peer.local.name = "";
 
 			// You can keep the following lines to set the hostname and ID
 			//Info_Peer.local.name = InetAddress.getByName(Info_Peer.local.IP).getHostName();
@@ -30,7 +30,6 @@ public class procedure {
 			e.printStackTrace();
 		}
 	}
-
 	/*
 	 *  Register file to local list
 	 */

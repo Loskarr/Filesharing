@@ -11,13 +11,13 @@ public class Peer {
 	/* 
 	 *  and register all files in the local file list.
 	 */
-	public static void Monitor_file(String path, procedure peerfunction){
+	public static void Monitor_file(String path, String pname, procedure peerfunction){
 		File file = new File(path);
 		String test[];
 		test = file.list();
 		if(test.length!=0){
 			for(int i = 0; i<test.length; i++){
-			Thread_for_register(test[i],test[i],peerfunction);
+			Thread_for_register(test[i],test[i],pname,peerfunction);
 			}
 		}
 	}
@@ -27,11 +27,11 @@ public class Peer {
 	 */ 
 	
 	
-	public static void Publish_file(String fileName, String serverName, procedure peerfunction){
-			Thread_for_register(fileName,serverName,peerfunction);
+	public static void Publish_file(String fileName, String serverName, String pname, procedure peerfunction){
+			Thread_for_register(fileName,serverName,pname,peerfunction);
 	}
 
-	public static void Thread_for_register(String fileName,String serverName, procedure peerfunction){
+	public static void Thread_for_register(String fileName, String serverName, String pname, procedure peerfunction){
 		Socket socket = null;
 		StringBuffer sb = new StringBuffer("register ");
 		try{			
@@ -45,7 +45,7 @@ public class Peer {
 			
 			// register to the server end
 			// Send register message
-			sb.append(Info_Peer.local.name);
+			sb.append(pname);
 			sb.append(" "+Info_Peer.local.ID);
 			sb.append(" "+fileName);
 			sb.append(" "+serverName);
@@ -66,7 +66,7 @@ public class Peer {
 		}
 	}
 
-	public static void Thread_for_signup(String name, String IP, procedure peerfunction){
+	public static void Thread_for_signup(String name, procedure peerfunction){
 		Socket socket = null;
 		StringBuffer sb = new StringBuffer("signup ");
 		try{			
@@ -75,9 +75,9 @@ public class Peer {
 			BufferedReader br = peersocket.getReader(socket);
 			PrintWriter pw = peersocket.getWriter(socket);
 			sb.append(name);
-			sb.append(" "+IP);
-			sb.append(" connect");
+			sb.append(" "+Info_Peer.local.IP);
 			sb.append(" request");
+			sb.append(" connect");
 			pw.println(sb.toString());
 			System.out.println(br.readLine());
 
@@ -103,15 +103,15 @@ public class Peer {
 		// Store file name
 		String fileName = null;
 		String serverName = null;
+		String pname = null;
+		String pass = null;
 		
 		BufferedReader localReader = new BufferedReader(new InputStreamReader(System.in));
 
 		System.out.println("Enter peer name:");
-		Info_Peer.local.name = localReader.readLine();
-		System.out.println("Enter this machine IP address:");
-		Info_Peer.local.IP = localReader.readLine();
-		System.out.println(Info_Peer.local.name+" "+Info_Peer.local.IP);
-		Thread_for_signup(Info_Peer.local.name, Info_Peer.local.IP, peerfunction);
+		pname = localReader.readLine();
+		//System.out.println(Info_Peer.local.name+" "+Info_Peer.local.IP);
+		Thread_for_signup(pname, peerfunction);
 		//Usage Interface
 		while(!exit)
 		{
@@ -121,7 +121,7 @@ public class Peer {
 			{
 			case 1:
 				{	
-					 Monitor_file(Info_Peer.local.path,peerfunction);				
+					 Monitor_file(Info_Peer.local.path,pname,peerfunction);				
 						
 				break;					
 				}
@@ -158,7 +158,7 @@ public class Peer {
 					// Search file through index server
 					System.out.println("Enter the server file name:");
 					serverName = localReader.readLine();
-					Publish_file( fileName, serverName, peerfunction);
+					Publish_file( fileName, serverName, pname, peerfunction);
 					break;
 				}
 			case 4:
