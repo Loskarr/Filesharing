@@ -1,6 +1,6 @@
 # Filesharing
 Các function đã có của peer
-1. Signin/Signup yêu cấu client nhập tên và IP address ( ko có password )
+1. Signin/Signup yêu cấu client nhập tên
 nếu tên không tồn tại thì tên và Ip address sẽ được server lưu lại và thông báo sign-up success
 nếu tên tồn tại thì Ip address sẽ được server cập nhật cho tên đó và thông báo sign-in success
 3. Register all file: register file với fname = lname
@@ -33,6 +33,8 @@ quit: ngừng server
 ![image](https://github.com/Loskarr/Filesharing/assets/143611763/2214a70d-d5d8-4fed-a5d6-1ec14f79a10d)
 
 Extend function đã thực hiện
+
+thông báo File không tồn tại
 
 thông báo command không tồn tại
 
