@@ -190,7 +190,7 @@ public class Peer {
 			
 			// Unregister to the server end
 			// Send unregister message
-			sb.append(Info_Peer.local.name);
+			sb.append("at");
 			sb.append(" "+Info_Peer.local.ID);
 			sb.append(" "+fileName);
 			
