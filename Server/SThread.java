@@ -46,7 +46,7 @@ public class SThread extends Thread{
 			String msg = null;
 			while((msg = br.readLine())!=null){
 				StringTokenizer st = new StringTokenizer(msg);
-				serverGUI.addNotification(msg);
+				//serverGUI.addNotification(msg);
 				String command = st.nextToken();
 				String name = st.nextToken();
 				String ID = st.nextToken();
