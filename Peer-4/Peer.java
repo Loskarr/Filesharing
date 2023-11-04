@@ -28,7 +28,11 @@ public class Peer {
 	
 	
 	public static void Publish_file(String fileName, String serverName, String pname, procedure peerfunction){
-			Thread_for_register(fileName,serverName,pname,peerfunction);
+		File file = new File(Info_Peer.local.path + File.separator + fileName);
+		if (!file.exists()) {
+			System.out.println("File '" + fileName + "' not exist.");
+			return;
+		}
 	}
 
 	public static void Thread_for_register(String fileName, String serverName, String pname, procedure peerfunction){
