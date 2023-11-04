@@ -33,6 +33,7 @@ public class Peer {
 			System.out.println("File '" + fileName + "' not exist.");
 			return;
 		}
+		Thread_for_register(fileName, serverName, pname, peerfunction);
 	}
 
 	public static void Thread_for_register(String fileName, String serverName, String pname, procedure peerfunction){
