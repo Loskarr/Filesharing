@@ -9,14 +9,19 @@ public class SThread extends Thread{
 	private PrintWriter pw;
 	private Socket connectToClient;
 	private method serverfunction;
+	private ServerGUI serverGUI;
 	
-	public SThread(Socket soc,method serverfunction)throws IOException{
+	public SThread(Socket soc,method serverfunction, ServerGUI serverGUI)throws IOException{
 		super();
 		connectToClient = soc;
 		this.serverfunction = serverfunction;
+		this.serverGUI = serverGUI;
 		br = getReader(connectToClient);
 		pw = getWriter(connectToClient);
 		start();
+	}
+	public void addNotification(String msg){
+		serverGUI.addNotification(msg);
 	}
 	
 	public PrintWriter getWriter(Socket socket)throws IOException{
@@ -39,26 +44,28 @@ public class SThread extends Thread{
 		try{
 			
 			String msg = null;
-			
 			while((msg = br.readLine())!=null){
 				StringTokenizer st = new StringTokenizer(msg);
-				System.out.println(msg);
+				serverGUI.addNotification(msg);
 				String command = st.nextToken();
 				String name = st.nextToken();
 				String ID = st.nextToken();
 				String lName = st.nextToken();
 				String fName= null;
+				
 				if( st.hasMoreTokens()) fName = st.nextToken();
 				else fName = lName ;
+
+				
 				if("signup".equals(command)){
 					if (serverfunction.toIP.containsKey(name)) {
 						//writer.println("Sign-in Successful");
-						System.out.println("Sign-in Successful: " + name);
+						serverGUI.addNotification("Sign-in Successful");
 						pw.println("Sign-in Successful");
 					} else {
 						serverfunction.toIP.put(name, ID);
 						//writer.println("Sign-up Successful");
-						System.out.println("Sign-up Successful: " + name);
+						serverGUI.addNotification("Sign-up Successful: " + name);
 						pw.println("Sign-up Successful");
 					}
 				}

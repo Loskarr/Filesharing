@@ -1,5 +1,3 @@
-
-
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -20,21 +18,21 @@ import java.util.concurrent.Future;
 
 
 public class method {
-
+	private ServerGUI serverGUI;
 	private ArrayList<Info_File> registryList = new ArrayList<Info_File>(); 
 	public Map<String, String> toIP = new HashMap<>();
 //	FileWriter writer = null;
 	/*
 	 *  Register file on server side
 	 */
+	public method(ServerGUI serverGUI){
+		this.serverGUI = serverGUI;
+	}
+	public method(){
+		
+	}
 	public void registery(String peerName, String peerID, String lName, String fName){
-		// TODO Auto-generated method stub
 		registerThread register = new registerThread(peerName, peerID, lName, fName);
-		//String[] parts = peerID.split(":");
-		//String ipAddress = parts[0];
-		// Map the peerName to the IP address
-		//toIP.put(peerName, ipAddress);
-		//System.out.println(peerName+" "+ipAddress+"\n");
 		Thread thread = new Thread(register);
 		thread.start();
 		thread = null;
@@ -58,7 +56,6 @@ public class method {
 		}
 		@Override
 		public void run() {
-			// TODO Auto-generated method stub
 			if(registryList.size()==0){
 				
 				try{
@@ -66,7 +63,7 @@ public class method {
 					FileWriter writer = new FileWriter("./serverLog.txt",true);
 					// Add register file to the registery list
 		            registryList.add(new Info_File(peerName,peerID,lName,fName));
-					System.out.println("File:"+lName+" from "+"Client: "+peerName+" is registeried as " + fName);
+					serverGUI.addNotification("File:"+lName+" from "+"Client: "+peerName+" is registeried as " + fName);
 					DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 					String time = df.format(new Date());
 					writer.write(time + "\t\tFile "+lName + " is registered on the index server as "+ fName +"\r\n");
@@ -82,22 +79,8 @@ public class method {
 				try{
 					if(fileNotExist(peerID, lName)){	
 						FileWriter writer = new FileWriter("./serverLog.txt",true);
-						registryList.add(new Info_File(peerName,peerID,lName,fName));
-						System.out.println("File:"+lName+" from "+"Client: "+peerName+" is registried as " + fName);
-						DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-						String time = df.format(new Date());
-						writer.write(time + "\t\tFile "+lName + " is registered on the index server as "+ fName +"\r\n");
-						writer.close();
-					}
-					else{
-						for(int i=0;i<registryList.size();i++){
-							if(registryList.get(i).getlName().equals(lName)&&
-									registryList.get(i).getID().equals(peerID)){
-								registryList.get(i).setName(lName,fName);
-							}
-						}
-						FileWriter writer = new FileWriter("./serverLog.txt",true);
-						System.out.println("File:"+lName+" from "+"Client: "+peerName+" is registried as " + fName);
+						registryList.add(new Info_File(peerName,peerID,lName, fName));
+						System.out.println("File:"+lName+" from "+"Client:"+peerName+" is registried as " + fName);
 						DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 						String time = df.format(new Date());
 						writer.write(time + "\t\tFile "+lName + " is registered on the index server as "+ fName +"\r\n");
@@ -111,7 +94,6 @@ public class method {
 		
 	}
 	private boolean fileNotExist(String peerID, String lName) {
-		// TODO Auto-generated method stub
 		for(int i=0;i<registryList.size();i++){
 			if(registryList.get(i).getlName().equals(lName)&&
 					registryList.get(i).getID().equals(peerID)){
@@ -128,7 +110,6 @@ public class method {
 	 *  Unregister file on server side
 	 */
 	public void unregistery(String peerName, String peerID, String lName){
-		// TODO Auto-generated method stub
 		unregisteryThread unregister = new unregisteryThread(peerName, peerID, lName);
 		Thread thread = new Thread(unregister);
 		thread.start();
@@ -152,7 +133,6 @@ public class method {
 		}
 		@Override
 		public void run() {
-			// TODO Auto-generated method stub
 			for(int i=0;i<registryList.size();i++){
 				try{
 					
@@ -160,7 +140,7 @@ public class method {
 							registryList.get(i).getID().equals(peerID)){
 						FileWriter writer = new FileWriter("./serverLog.txt",true);
 						registryList.remove(i);
-						System.out.println("File:"+lName+" from "+"Client: "+peerName+" is removed!");
+						serverGUI.addNotification("File: "+lName+" from "+"Client: "+peerName+" is removed!");
 						DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 						String time = df.format(new Date());
 						writer.write(time + "\t\tFile "+lName + " is unregistered on the index server!\r\n");
@@ -175,21 +155,6 @@ public class method {
 	}
 	
 	
-	/*
-	 *  Search file on server side
-	 */
-//	public ArrayList<String> search(String fileName) {
-//		//search file ID: IP + port
-//		ArrayList<String> peerList = new ArrayList<String>();
-//
-//		for(int i=0;i<registryList.size();i++){
-//			if(registryList.get(i).getName().equals(fileName)){
-//				peerList.add(registryList.get(i).getID());
-//				
-//			}
-//		}
-//		return peerList;
-//	}
 	
 	public ArrayList<String> search(String fName) {
 		//search file ID: IP + port
@@ -204,7 +169,7 @@ public class method {
             	peerList.addAll(result.get());
 			}
 		}catch (InterruptedException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		} catch(ExecutionException e){
 			e.printStackTrace();
@@ -224,11 +189,10 @@ public class method {
 		}
 		@Override
 		public ArrayList<String> call() throws Exception {
-			// TODO Auto-generated method stub
+			
 			for(int i=0;i<registryList.size();i++){
 				if(registryList.get(i).getfName().equals(fName)){
 					peerList.add(registryList.get(i).getID()+":"+registryList.get(i).getlName());
-					//System.out.println(registryList.get(i).getID()+registryList.get(i).getlName()+"\n");
 				}
 			}
 			return peerList;

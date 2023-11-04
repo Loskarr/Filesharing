@@ -1,5 +1,3 @@
-
-
 public class Info_File {
 	
 	private String peerName;
