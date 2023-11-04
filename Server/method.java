@@ -80,7 +80,22 @@ public class method {
 					if(fileNotExist(peerID, lName)){	
 						FileWriter writer = new FileWriter("./serverLog.txt",true);
 						registryList.add(new Info_File(peerName,peerID,lName, fName));
-						System.out.println("File:"+lName+" from "+"Client:"+peerName+" is registried as " + fName);
+						serverGUI.addNotification("File:"+lName+" from "+"Client:"+peerName+" is registried as " + fName);
+						DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+						String time = df.format(new Date());
+						writer.write(time + "\t\tFile "+lName + " is registered on the index server as "+ fName +"\r\n");
+						writer.close();
+					}
+					else{
+						for(int i=0;i<registryList.size();i++){
+							if(registryList.get(i).getlName().equals(lName)&&
+									registryList.get(i).getID().equals(peerID)){
+								registryList.get(i).setName(lName,fName);
+							}
+						}
+						FileWriter writer = new FileWriter("./serverLog.txt",true);
+						registryList.add(new Info_File(peerName,peerID,lName, fName));
+						serverGUI.addNotification("File:"+lName+" from "+"Client:"+peerName+" is registried as " + fName);
 						DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 						String time = df.format(new Date());
 						writer.write(time + "\t\tFile "+lName + " is registered on the index server as "+ fName +"\r\n");
