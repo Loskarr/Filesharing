@@ -1,30 +1,359 @@
 
 
 
+import javax.management.monitor.Monitor;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+//import java.lang.foreign.AddressLayout;
 import java.io.*;
 import java.net.*;
+import java.nio.file.AccessDeniedException;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import javax.swing.table.DefaultTableModel;
+import javax.swing.border.Border;
+import javax.swing.border.TitledBorder;
 
 public class Peer {
 	
 	/* 
 	 *  and register all files in the local file list.
 	 */
+	private JFrame nframe;
+	private JFrame frame;
+    private JTable table;
+    private static DefaultTableModel tableModel;
+    private JList<String> notificationList;
+    private static DefaultListModel<String> notificationListModel;
+    private JButton ClearButton;
+
+	private JLabel peerNameLabel;
+    private JTextField peerNameTextField;
+    private JButton loginButton;
+
+	private JButton btnDownload;
+	private static DefaultListModel<String> downloadListModel;
+
+
+    private JButton btnRegister;
+    private JButton btnMonitorFile;
+    private JButton btnSearchFile;
+	private JButton btnSearchFile2;
+	private JButton signup;
+    private JTextField searchTextField;
+	private JTextField searchTextField2;
+    private JTextField filenameTextField;
+    private JTextField serverFileNameTextField;
+	private JTextField signupTextField;
+	private JTextField downloadTextField;
+	//register all files in the local file list.
 	public static void Monitor_file(String path, String pname, procedure peerfunction){
-		File file = new File(path);
+		 File file = new File(path);
+		// //Get all files in the path
+		File[] files = file.listFiles();
 		String test[];
 		test = file.list();
+		for(int i = 0; i<files.length; i++){	
+			String fileType = getFileType(files[i]);
+			long fileSize = files[i].length();
+			long fileSizeKB = fileSize / 1024;
+			String fileName = files[i].getName();
+			String localFileName = fileName;
+			String serverFileName = fileName.substring(0, fileName.lastIndexOf('.'));
+			tableModel.addRow(new Object[]{fileName, fileSizeKB, fileType});
+	}
+		
+		
 		if(test.length!=0){
 			for(int i = 0; i<test.length; i++){
 			Thread_for_register(test[i],test[i],pname,peerfunction);
+
 			}
 		}
 	}
-	
+	//Create a GUI for peer
+	public  void initializeGUI(procedure peerfunction) {
+		nframe = new JFrame("Peer Application");
+		nframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        nframe.setTitle("BK File Sharing");
+        nframe.setSize(1000, 1000);
+		ImageIcon img = new ImageIcon("hcmut.png");
+		ImageIcon icon_Notification = new ImageIcon("NoteIcon.jpg");
+		ImageIcon uploadIcon = new ImageIcon("Upload.png");
+		ImageIcon downloadIcon = new ImageIcon("download.png");
+		Image image_Notification = icon_Notification.getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH);
+		Image uploadImage = uploadIcon.getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH);
+		Image downloadImage = downloadIcon.getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH);
+		ImageIcon resizedIcon_Notification = new ImageIcon(image_Notification);
+		ImageIcon uploadResizedIcon = new ImageIcon(uploadImage);
+		ImageIcon downloadResizedIcon = new ImageIcon(downloadImage);
+		nframe.setIconImage(img.getImage());
+		
+		
+		signup = new JButton("Signup");
+		signupTextField = new JTextField(20);
+        btnRegister = new JButton("Register a file");
+        filenameTextField = new JTextField(20);
+		Border filenameBorder = BorderFactory.createTitledBorder("Input File Name");
+		filenameTextField.setBorder(filenameBorder);
+		serverFileNameTextField = new JTextField(20);
+		Border serverFileNameBorder = BorderFactory.createTitledBorder("Input Server File Name");
+		serverFileNameTextField.setBorder(serverFileNameBorder);
+		btnMonitorFile = new JButton("Register All Files");
+		btnSearchFile = new JButton("Search File");
+		searchTextField = new JTextField(20);
+		Border searchBorder = BorderFactory.createTitledBorder("Input File Name");
+		searchTextField.setBorder(searchBorder);
+
+		btnDownload = new JButton("Download recently searched file");
+		downloadTextField = new JTextField(20);
+		Border downloadBorder = BorderFactory.createTitledBorder("Search File Name to Download");
+		downloadTextField.setBorder(downloadBorder);
+		btnSearchFile2 = new JButton("Search File to Download");
+		searchTextField2 = new JTextField(20);
+
+        JTabbedPane tabbedPane = new JTabbedPane();
+		JPanel loginPanel = new JPanel(new BorderLayout());
+        peerNameLabel = new JLabel("Peer Name: ");
+        peerNameTextField = new JTextField(20);
+        loginButton = new JButton("Login");
+		loginPanel.add(peerNameLabel, BorderLayout.WEST);
+        loginPanel.add(peerNameTextField, BorderLayout.CENTER);
+        loginPanel.add(loginButton, BorderLayout.SOUTH);
+
+		btnDownload.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String downloadFileName = searchTextField2.getText();
+				if( downloadFileName.isEmpty() ) {
+					return;
+				}
+				else {
+					download(downloadFileName, peerfunction, 0);
+				
+				}
+			}
+		});
+		btnMonitorFile.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//Get Info_Peer.local.path
+				// How can i get the path from Info_Peer.local.path?
+				// 				//String path = filenameTextField.getText(); // Assume this is the path to monitor
+				try {
+					Monitor_file(Info_Peer.local.path, "peerName", peerfunction); // Assume peerName is your peer's name
+					
+				} catch (Exception ex) {
+				}
+			}
+		});
+		btnRegister.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent e) {
+				String localFileName="";
+				String serverFileName="";
+				JFileChooser fileChooser = new JFileChooser();
+				fileChooser.setCurrentDirectory(new File("./"));
+                int result = fileChooser.showOpenDialog(frame);
+                if (result == JFileChooser.APPROVE_OPTION) {
+                    File file = fileChooser.getSelectedFile();
+                    String fileType = getFileType(file);
+                    long fileSize = file.length();
+                    long fileSizeKB = fileSize / 1024;
+                    String fileName = file.getName();
+					localFileName = fileName;
+					//Server file name is local file name without extension
+					serverFileName = fileName.substring(0, fileName.lastIndexOf('.'));
+                    // Add file details to the table
+                    tableModel.addRow(new Object[]{fileName, fileSizeKB, fileType});}
+
+				// String localFileName = filenameTextField.getText();
+				// String serverFileName = serverFileNameTextField.getText();
+				//Get localFileName and serverFileName from the FileChooser Example file 40.txt has localFileName = 40.txt and serverFileName = 40					 
+				
+				try {
+					Publish_file(localFileName, serverFileName, "peerName", peerfunction); // Assume peerName is your peer's name
+				} catch (Exception ex) {
+				}
+			}
+		});
+		btnSearchFile.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//catch the fault here if searchTextField.getText() is empty
+
+
+				String searchFileName = searchTextField.getText();
+				if( searchFileName.isEmpty() ) {
+					return;
+				}
+				else {
+				boolean found = searchThread(searchFileName, peerfunction);
+				if (found) {
+				} else { addNotification(searchFileName + " is not found");
+				}}
+			}
+		});
+		btnSearchFile2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//catch the fault here if searchTextField.getText() is empty
+
+
+				String searchFileName = searchTextField2.getText();
+				if( searchFileName.isEmpty() ) {
+					return;
+				}
+				else {
+				boolean found = searchThread(searchFileName, peerfunction);
+				if (found) {
+				} else { addNotification(searchFileName + " is not found");
+				}}
+			}
+		});
+		JPanel UploadPanel = new JPanel();
+        UploadPanel.setLayout(new BorderLayout());
+        // Create table with columns: Type, Size, Name, and Tick
+		String[] columnNames = {"Name", "Size(kB)", "Type"};
+        
+        
+        tableModel = new DefaultTableModel(columnNames, 0) {
+        };
+
+        table = new JTable(tableModel);
+
+    
+        // Create button for file upload
+       // JButton uploadButton = new JButton("Upload File");
+        // uploadButton.addActionListener(new ActionListener() {
+        //     @Override
+        //     public void actionPerformed(ActionEvent e) {
+        //         JFileChooser fileChooser = new JFileChooser();
+        //         int result = fileChooser.showOpenDialog(frame);
+        //         if (result == JFileChooser.APPROVE_OPTION) {
+        //             File file = fileChooser.getSelectedFile();
+        //             String fileType = getFileType(file);
+        //             long fileSize = file.length();
+        //             long fileSizeKB = fileSize / 1024;
+        //             String fileName = file.getName();
+    
+        //             // Add file details to the table
+        //             tableModel.addRow(new Object[]{fileName, fileSizeKB, fileType});
+        //         }
+        //     }
+        // });
+		JPanel panel = new JPanel(new BorderLayout());
+        panel.add(new JScrollPane(table), BorderLayout.CENTER);
+      //  panel.add(uploadButton, BorderLayout.SOUTH);
+    
+        // Create buttons for "Register" and "Clear"
+        JButton registerButton = new JButton("Register");
+        registerButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Implement the logic for registering the selected files
+            }
+        });
+    
+        JButton clearButton = new JButton("Clear");
+        clearButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Implement the logic for clearing the table
+                tableModel.setRowCount(0); // Remove all rows from the table
+            }
+        });
+    
+        // Create panel to hold the "Register" and "Clear" buttons
+		JPanel buttonContainerPanel = new JPanel();
+        buttonContainerPanel.setLayout(new BoxLayout(buttonContainerPanel, BoxLayout.Y_AXIS));
+		JPanel buttonPanel1 = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		JPanel buttonPanel2 = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JPanel buttonPanel = new JPanel();
+        buttonPanel2.add(clearButton);
+		buttonPanel1.add(btnMonitorFile);
+		buttonPanel1.add(btnSearchFile);
+		buttonPanel1.add(searchTextField);
+		buttonPanel1.add(btnRegister);
+		//buttonPanel.add(filenameTextField);
+		//buttonPanel.add(serverFileNameTextField);
+		buttonContainerPanel.add(buttonPanel1);
+		buttonContainerPanel.add(buttonPanel);
+		buttonContainerPanel.add(buttonPanel2);
+
+		JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel.add(panel, BorderLayout.CENTER);
+        mainPanel.add(buttonContainerPanel, BorderLayout.SOUTH);
+        JPanel notificationPanel = new JPanel();
+        notificationPanel.setLayout(new BorderLayout());
+        notificationListModel = new DefaultListModel<>();
+        notificationList = new JList<>(notificationListModel);
+		 JPanel downloadPanel = new JPanel();
+		// // Let the button be on the left and the north the layout
+		// downloadPanel.setLayout(new BorderLayout());
+		// JPanel downloadContainerPanel = new JPanel();
+		// downloadContainerPanel.setLayout(new BoxLayout(downloadContainerPanel, BoxLayout.Y_AXIS));
+		 downloadPanel.add(searchTextField2, BorderLayout.NORTH);
+		 downloadPanel.add(btnSearchFile2);
+		 downloadPanel.add(btnDownload, BorderLayout.CENTER);
+
+		// downloadPanel.add(downloadContainerPanel, BorderLayout.CENTER);
+		
+        JScrollPane noteScrollPane = new JScrollPane(notificationList);
+        notificationPanel.add(noteScrollPane, BorderLayout.CENTER);
+        ClearButton = new JButton("Clear");
+        ClearButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                notificationListModel.clear();
+            }
+        });
+        notificationPanel.add(ClearButton, BorderLayout.SOUTH);
+
+        tabbedPane.addTab("Notification",resizedIcon_Notification ,notificationPanel);
+        tabbedPane.addTab("Upload", uploadResizedIcon,mainPanel);
+		tabbedPane.addTab("Download", downloadResizedIcon,downloadPanel);
+		nframe.getContentPane().add(loginPanel);
+
+		loginButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Implement the logic for registering the selected files
+                String peerName = peerNameTextField.getText();
+				Thread_for_signup(peerName, peerfunction);
+                if (peerName != null && !peerName.isEmpty()) {
+                    nframe.remove(loginPanel);
+                    nframe.revalidate();
+                    nframe.repaint();
+                    nframe.setSize(800, 800);
+                    nframe.getContentPane().add(tabbedPane);
+                }
+            }
+        });
+		nframe.pack();
+        nframe.setVisible(true);
+
+
+
+	}
 	/*
 	 *  Register the file to the index server
-	 */ 
+	 */ public static String getFileType(File file) {
+        String name = file.getName();
+        int lastIndexOfDot = name.lastIndexOf(".");
+        if (lastIndexOfDot != -1 && lastIndexOfDot != name.length() - 1) {
+            return name.substring(lastIndexOfDot + 1);
+        }
+        return "";
+    }
+	public static void addNotification(String notification) {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				notificationListModel.addElement(notification);
+			}
+		});
+		
+        // ... Add other components to panel 
+	}
 	
 	
 	public static void Publish_file(String fileName, String serverName, String pname, procedure peerfunction){
@@ -34,7 +363,8 @@ public class Peer {
 			return;
 		}
 		Thread_for_register(fileName, serverName, pname, peerfunction);
-	}
+		//Add notification like File 14.txt is Do_registered as 14
+			}
 
 	public static void Thread_for_register(String fileName, String serverName, String pname, procedure peerfunction){
 		Socket socket = null;
@@ -69,6 +399,7 @@ public class Peer {
 				e.printStackTrace();
 			}
 		}
+		addNotification("File "+fileName+" is registered as "+serverName) ;	
 	}
 
 	public static void Thread_for_signup(String name, procedure peerfunction){
@@ -246,7 +577,7 @@ public class Peer {
 			if((find = peerfunction.search(fileName))== true){
 				for(int i=0; i<Info_Peer.dest.destPath.size(); i++){
 					System.out.println(Info_Peer.dest.destLname.get(i) +" with name "+ fileName+" is found on "+Info_Peer.dest.destPath.get(i)+" ("+i+")");
-				}
+				   addNotification(Info_Peer.dest.destLname.get(i) +" with name "+ fileName+" is found on "+Info_Peer.dest.destPath.get(i)+" ("+i+")");				}
 			}
 
 		}catch (IOException e) {
@@ -321,12 +652,20 @@ public class Peer {
 	
 	
 	public static void main(String args[])throws IOException{
+
+		SwingUtilities.invokeLater(new Runnable() {
+
+            public void run() {
+				try {
+
 	    procedure peerfunction = new procedure();
 	    peerfunction.initialize();
 	 // Monitor_file(Info_Peer.local.path,peerfunction);
+	 Peer peerInstance = new Peer();
+	 peerInstance.initializeGUI(peerfunction);
 	    ServerSocket server = null;
-		PingClient pingclient = new PingClient(Info_Peer.local.pingPort);
-		pingclient.start();
+		//PingClient pingclient = new PingClient(Info_Peer.local.pingPort);
+		//pingclient.start();
 		WrThread wrThread = new WrThread(Info_Peer.local.path, peerfunction);
 		wrThread.start();
 	    try{
@@ -337,7 +676,15 @@ public class Peer {
 	    }catch(IOException e){
 	    	e.printStackTrace();
 	    }
-		new Peer().do_it(peerfunction);
+		//new Peer().do_it(peerfunction);
+	} catch (Exception e) {
+		System.err.println("Error setting up the server: " + e.getMessage());
+		e.printStackTrace();
+		System.exit(1); // Thoát nếu không thể start server
+	}
+ 
+}
+});
 
 	}
 }
@@ -388,11 +735,16 @@ class DThread extends Thread{
                 inputByte = new byte[1024];     
                 System.out.println("\nStart receiving..."); 
                 System.out.println("display file " + fileName);
+				//Print to GUI
+				Peer.addNotification("Start receiving file " + fileName);
+				Peer.addNotification("display file " + fileName);
+
                 while ((length = dis.read(inputByte, 0, inputByte.length)) > 0) {  
                     fos.write(inputByte, 0, length);  
                     fos.flush();      
                 }  
                 System.out.println("Finish receive:"+filePath);  
+				Peer.addNotification("Finish receive:"+filePath); 
             } finally {  
                 if (fos != null)  
                     fos.close();  
