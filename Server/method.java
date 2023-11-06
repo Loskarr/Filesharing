@@ -207,7 +207,7 @@ public class method {
 			
 			for(int i=0;i<registryList.size();i++){
 				if(registryList.get(i).getfName().equals(fName)){
-					peerList.add(registryList.get(i).getID()+":"+registryList.get(i).getlName());
+					peerList.add(registryList.get(i).getID()+":"+registryList.get(i).getlName()+":"+registryList.get(i).getName());
 				}
 			}
 			return peerList;
