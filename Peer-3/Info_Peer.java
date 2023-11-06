@@ -25,6 +25,7 @@ public class Info_Peer {
 		public static ArrayList<String> destPath = new ArrayList<String>();
 		public static String path = "./Look";
 		public static ArrayList<String> destLname = new ArrayList<String>();
+		public static ArrayList<String> destPname = new ArrayList<String>();
 	}
 	
 	// Initialization
@@ -33,6 +34,7 @@ public class Info_Peer {
 		Info_Peer.dest.destList = new ArrayList<String>();
 		Info_Peer.dest.destPath = new ArrayList<String>();
 		Info_Peer.dest.destLname= new ArrayList<String>();
+		Info_Peer.dest.destPname= new ArrayList<String>();
 	}
 	
 }

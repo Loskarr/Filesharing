@@ -88,12 +88,14 @@ public class procedure {
 					String IP = info[0];
 					String port = info[1];
 					String lname = info[2];
+					String name = info[3];
 					Info_Peer.dest.destination = info[0] +":"+ info[1] + ":Look";
 					DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 					String time = df.format(new Date());
-					writer.write(time + "\t\tFile "+filename + " is found on "+IP+" as " + lname + "!\r\n");
+					writer.write(time + "\t\tFile "+filename + " is found on Client: "+name+" as " + lname + "!\r\n");
 					Info_Peer.dest.destPath.add(Info_Peer.dest.destination);
 					Info_Peer.dest.destLname.add(lname);
+					Info_Peer.dest.destPname.add(name); 
 				}
 								
 				found = true;
