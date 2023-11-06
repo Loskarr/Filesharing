@@ -198,7 +198,7 @@ public class Peer {
 				if (found) {
 				} else { addNotification(searchFileName + " is not found");
 				}}
-				
+				searchTextField.setText("");
 			}
 		});
 		btnSearchFile2.addActionListener(new ActionListener() {
@@ -215,7 +215,7 @@ public class Peer {
 				if (found) {
 				} else { addNotification(searchFileName + " is not found");
 				}}
-				
+				searchTextField2.setText("");
 			}
 		});
 		JPanel UploadPanel = new JPanel();
@@ -583,8 +583,8 @@ public class Peer {
 			// If find file in some peers, output their address
 			if((find = peerfunction.search(fileName))== true){
 				for(int i=0; i<Info_Peer.dest.destPath.size(); i++){
-					System.out.println(Info_Peer.dest.destLname.get(i) +" with name "+ fileName+" is found on "+Info_Peer.dest.destPath.get(i)+" ("+i+")");
-				   addNotification(Info_Peer.dest.destLname.get(i) +" with name "+ fileName+" is found on "+Info_Peer.dest.destPath.get(i)+" ("+i+")");				}
+					//System.out.println(Info_Peer.dest.destLname.get(i) +" with name "+ fileName+" is found on "+Info_Peer.dest.destPath.get(i)+" ("+i+")");
+				   addNotification(Info_Peer.dest.destLname.get(i) +" with name "+ fileName+" is found on Client: "+Info_Peer.dest.destPname.get(i)+" ("+i+")");				}
 			}
 
 		}catch (IOException e) {
@@ -672,7 +672,7 @@ public class Peer {
 	 peerInstance.initializeGUI(peerfunction);
 	    ServerSocket server = null;
 		PingClient pingclient = new PingClient(Info_Peer.local.pingPort);
-		pingclient.start();
+		//pingclient.start();
 		WrThread wrThread = new WrThread(Info_Peer.local.path, peerfunction);
 		wrThread.start();
 	    try{
