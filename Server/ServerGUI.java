@@ -1,7 +1,6 @@
 
 import java.io.*;
 import java.net.*;
-// import java.util.Map;
 import java.util.ArrayList;
 import javax.swing.*;
 import java.awt.*;
@@ -192,9 +191,24 @@ class ServerGUI extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 tableModel.setRowCount(0);
-                for (String name : serverfunction.toIP.keySet()) {
-                    String ipAddress = serverfunction.toIP.get(name);
-                    tableModel.addRow(new Object[]{name, ipAddress});
+                // for (String name : serverfunction.toIP.keySet()) {
+                //     String ipAddress = serverfunction.toIP.get(name);
+                //     tableModel.addRow(new Object[]{name, ipAddress});
+                // }
+                // Get the user list from User.txt
+                try {
+                    BufferedReader reader = new BufferedReader(new FileReader("User.txt"));
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        String[] parts = line.split(" ");
+                        String name = parts[0];
+                        String ipAddress = parts[1];
+                        tableModel.addRow(new Object[]{name, ipAddress});
+                    }
+                    reader.close();
+                }
+                catch (IOException ex) {
+                    ex.printStackTrace();
                 }
             }
         });

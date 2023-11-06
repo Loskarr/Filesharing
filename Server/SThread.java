@@ -65,6 +65,9 @@ public class SThread extends Thread{
 					} else {
 						serverfunction.toIP.put(name, ID);
 						//writer.println("Sign-up Successful");
+						FileWriter fw = new FileWriter("User.txt", true);
+						fw.write(name + " " + ID + "\n");
+						fw.close();
 						serverGUI.addNotification("Sign-up Successful: " + name);
 						pw.println("Sign-up Successful");
 					}
