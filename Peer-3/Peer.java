@@ -49,6 +49,8 @@ public class Peer {
     private JTextField serverFileNameTextField;
 	private JTextField signupTextField;
 	private JTextField downloadTextField;
+
+	public String peerName;
 	//register all files in the local file list.
 	public static void Monitor_file(String path, String pname, procedure peerfunction){
 		 File file = new File(path);
@@ -63,7 +65,7 @@ public class Peer {
 			String fileName = files[i].getName();
 			String localFileName = fileName;
 			String serverFileName = fileName.substring(0, fileName.lastIndexOf('.'));
-			tableModel.addRow(new Object[]{fileName, fileSizeKB, fileType});
+			tableModel.addRow(new Object[]{fileName,fileName, fileSizeKB, fileType});
 	}
 		
 		
@@ -97,7 +99,7 @@ public class Peer {
 		signupTextField = new JTextField(20);
         btnRegister = new JButton("Register a file");
         filenameTextField = new JTextField(20);
-		Border filenameBorder = BorderFactory.createTitledBorder("Input File Name");
+		Border filenameBorder = BorderFactory.createTitledBorder("Input Server File Name");
 		filenameTextField.setBorder(filenameBorder);
 		serverFileNameTextField = new JTextField(20);
 		Border serverFileNameBorder = BorderFactory.createTitledBorder("Input Server File Name");
@@ -134,6 +136,7 @@ public class Peer {
 					download(downloadFileName, peerfunction, 0);
 				
 				}
+				searchTextField2.setText("");
 			}
 		});
 		btnMonitorFile.addActionListener(new ActionListener() {
@@ -142,7 +145,7 @@ public class Peer {
 				// How can i get the path from Info_Peer.local.path?
 				// 				//String path = filenameTextField.getText(); // Assume this is the path to monitor
 				try {
-					Monitor_file(Info_Peer.local.path, "peerName", peerfunction); // Assume peerName is your peer's name
+					Monitor_file(Info_Peer.local.path, peerName, peerfunction); // Assume peerName is your peer's name
 					
 				} catch (Exception ex) {
 				}
@@ -164,16 +167,20 @@ public class Peer {
                     String fileName = file.getName();
 					localFileName = fileName;
 					//Server file name is local file name without extension
-					serverFileName = fileName.substring(0, fileName.lastIndexOf('.'));
+					//if serverfilenametextfield is empty, server file name is local file name without extension else server file name is serverfilenametextfield
+					if(serverFileNameTextField.getText().isEmpty()){
+					serverFileName = fileName.substring(0, fileName.lastIndexOf('.'));}
+					else{serverFileName = serverFileNameTextField.getText();}
                     // Add file details to the table
-                    tableModel.addRow(new Object[]{fileName, fileSizeKB, fileType});}
+                    tableModel.addRow(new Object[]{fileName,serverFileName, fileSizeKB, fileType});}
 
 				// String localFileName = filenameTextField.getText();
 				// String serverFileName = serverFileNameTextField.getText();
 				//Get localFileName and serverFileName from the FileChooser Example file 40.txt has localFileName = 40.txt and serverFileName = 40					 
-				
+						serverFileNameTextField.setText("");
+						filenameTextField.setText("");
 				try {
-					Publish_file(localFileName, serverFileName, "peerName", peerfunction); // Assume peerName is your peer's name
+					Publish_file(localFileName, serverFileName, peerName, peerfunction); // Assume peerName is your peer's name
 				} catch (Exception ex) {
 				}
 			}
@@ -181,7 +188,6 @@ public class Peer {
 		btnSearchFile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//catch the fault here if searchTextField.getText() is empty
-
 
 				String searchFileName = searchTextField.getText();
 				if( searchFileName.isEmpty() ) {
@@ -192,6 +198,7 @@ public class Peer {
 				if (found) {
 				} else { addNotification(searchFileName + " is not found");
 				}}
+				searchTextField.setText("");
 			}
 		});
 		btnSearchFile2.addActionListener(new ActionListener() {
@@ -208,16 +215,16 @@ public class Peer {
 				if (found) {
 				} else { addNotification(searchFileName + " is not found");
 				}}
+				searchTextField2.setText("");
 			}
 		});
 		JPanel UploadPanel = new JPanel();
         UploadPanel.setLayout(new BorderLayout());
         // Create table with columns: Type, Size, Name, and Tick
-		String[] columnNames = {"Name", "Size(kB)", "Type"};
+		String[] columnNames = {"Filename","Serverfilename", "Size(kB)", "Type"};
         
         
-        tableModel = new DefaultTableModel(columnNames, 0) {
-        };
+        tableModel = new DefaultTableModel(columnNames, 0);
 
         table = new JTable(tableModel);
 
@@ -273,11 +280,11 @@ public class Peer {
 		buttonPanel1.add(btnMonitorFile);
 		buttonPanel1.add(btnSearchFile);
 		buttonPanel1.add(searchTextField);
-		buttonPanel1.add(btnRegister);
+		buttonPanel2.add(btnRegister);
 		//buttonPanel.add(filenameTextField);
-		//buttonPanel.add(serverFileNameTextField);
+		buttonPanel2.add(serverFileNameTextField);
 		buttonContainerPanel.add(buttonPanel1);
-		buttonContainerPanel.add(buttonPanel);
+		//buttonContainerPanel.add(buttonPanel);
 		buttonContainerPanel.add(buttonPanel2);
 
 		JPanel mainPanel = new JPanel(new BorderLayout());
@@ -318,7 +325,7 @@ public class Peer {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Implement the logic for registering the selected files
-                String peerName = peerNameTextField.getText();
+                peerName = peerNameTextField.getText();
 				Thread_for_signup(peerName, peerfunction);
                 if (peerName != null && !peerName.isEmpty()) {
                     nframe.remove(loginPanel);
@@ -664,8 +671,8 @@ public class Peer {
 	 Peer peerInstance = new Peer();
 	 peerInstance.initializeGUI(peerfunction);
 	    ServerSocket server = null;
-		//PingClient pingclient = new PingClient(Info_Peer.local.pingPort);
-		//pingclient.start();
+		PingClient pingclient = new PingClient(Info_Peer.local.pingPort);
+		pingclient.start();
 		WrThread wrThread = new WrThread(Info_Peer.local.path, peerfunction);
 		wrThread.start();
 	    try{
