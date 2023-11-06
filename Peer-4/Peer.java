@@ -198,7 +198,7 @@ public class Peer {
 				if (found) {
 				} else { addNotification(searchFileName + " is not found");
 				}}
-				searchTextField.setText("");
+				
 			}
 		});
 		btnSearchFile2.addActionListener(new ActionListener() {
@@ -215,7 +215,7 @@ public class Peer {
 				if (found) {
 				} else { addNotification(searchFileName + " is not found");
 				}}
-				searchTextField2.setText("");
+				
 			}
 		});
 		JPanel UploadPanel = new JPanel();
