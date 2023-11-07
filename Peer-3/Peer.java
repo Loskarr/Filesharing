@@ -749,7 +749,7 @@ public class Peer {
 	 peerInstance.initializeGUI(peerfunction);
 	    ServerSocket server = null;
 		PingClient pingclient = new PingClient(Info_Peer.local.pingPort);
-		//pingclient.start();
+		pingclient.start();
 		WrThread wrThread = new WrThread(Info_Peer.local.path, peerfunction);
 		wrThread.start();
 	    try{
