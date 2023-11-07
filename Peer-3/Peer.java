@@ -1,6 +1,3 @@
-
-
-
 import javax.management.monitor.Monitor;
 import javax.swing.*;
 import java.awt.*;
@@ -53,7 +50,7 @@ public class Peer {
 	private JTextField signupTextField;
 	private JTextField downloadTextField;
 	private JTextField terminalTextInput;
-    private JTextArea terminalTextOutput;
+    private static JTextArea terminalTextOutput;
 	private JTextField sourceTextField;
 	private JLabel sourceLabel;
 	private JLabel filenameLabel;
@@ -342,7 +339,7 @@ public class Peer {
 						//Publish the file
 						Publish_file(fileName, serverFileName, serverFileName, peerfunction);
 						//show File download.png is Do_registered as download download.png is the file name and Do_registered is the server file name
-						terminalTextOutput.append("-> File " + fileName + " is registered as " + serverFileName + "\n");
+						//terminalTextOutput.append("-> File " + fileName + " is registered as " + serverFileName + "\n");
 						
 						
 
@@ -444,9 +441,11 @@ public class Peer {
 		File file = new File(Info_Peer.local.path + File.separator + fileName);
 		if (!file.exists()) {
 			System.out.println("File '" + fileName + "' not exist.");
+			terminalTextOutput.append("-> File '" + fileName + "' not exist.\n");
 			return;
 		}
 		Thread_for_register(fileName, serverName, pname, peerfunction);
+
 
 			}
 
@@ -484,6 +483,8 @@ public class Peer {
 			}
 		}
 		addNotification("File "+fileName+" is registered as "+serverName) ;	
+		terminalTextOutput.append("-> File " + fileName + " is registered as " + serverName + "\n");
+
 	}
 
 	public static void Thread_for_signup(String name, procedure peerfunction){
@@ -891,7 +892,6 @@ class WrThread extends Thread {
 
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
 				if(Info_Peer.local.fileList.size()!=0){
 					for(int i = 0; i < Info_Peer.local.fileList.size(); i++){
 						File file = new File(path + File.separator +
