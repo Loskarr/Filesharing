@@ -19,8 +19,8 @@ public class procedure {
 			Info_Peer.local.downloadPort = 10310;
 			
 			// Set the specific IP address
-			Info_Peer.local.IP = "192.168.1.6";
-			Info_Peer.local.serverIP = "192.168.1.6";
+			Info_Peer.local.IP = "192.168.1.247";
+			Info_Peer.local.serverIP = "192.168.1.247";
 
 			// You can keep the following lines to set the hostname and ID
 			//Info_Peer.local.name = InetAddress.getByName(Info_Peer.local.IP).getHostName();
@@ -87,14 +87,12 @@ public class procedure {
 					String IP = info[0];
 					String port = info[1];
 					String lname = info[2];
-					String name = info[3];
 					Info_Peer.dest.destination = info[0] +":"+ info[1] + ":Look";
 					DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 					String time = df.format(new Date());
-					writer.write(time + "\t\tFile "+filename + " is found on Client: "+name+" as " + lname + "!\r\n");
+					writer.write(time + "\t\tFile "+filename + " is found on "+IP+" as " + lname + "!\r\n");
 					Info_Peer.dest.destPath.add(Info_Peer.dest.destination);
 					Info_Peer.dest.destLname.add(lname);
-					Info_Peer.dest.destPname.add(name); 
 				}
 								
 				found = true;
