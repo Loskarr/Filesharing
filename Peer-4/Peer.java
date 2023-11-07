@@ -14,6 +14,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.swing.table.DefaultTableModel;
+import javax.swing.tree.TreeNode;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 
@@ -43,14 +44,22 @@ public class Peer {
     private JButton btnSearchFile;
 	private JButton btnSearchFile2;
 	private JButton signup;
+	private JButton btnChooseFile;
+
     private JTextField searchTextField;
 	private JTextField searchTextField2;
     private JTextField filenameTextField;
     private JTextField serverFileNameTextField;
 	private JTextField signupTextField;
 	private JTextField downloadTextField;
-
+	private JTextField terminalTextInput;
+    private JTextArea terminalTextOutput;
+	private JTextField sourceTextField;
+	private JLabel sourceLabel;
+	private JLabel filenameLabel;
 	public String peerName;
+	public File Filetoregister;
+
 	//register all files in the local file list.
 	public static void Monitor_file(String path, String pname, procedure peerfunction){
 		 File file = new File(path);
@@ -105,14 +114,21 @@ public class Peer {
 		Border serverFileNameBorder = BorderFactory.createTitledBorder("Input Server File Name");
 		serverFileNameTextField.setBorder(serverFileNameBorder);
 		btnMonitorFile = new JButton("Register All Files");
+		btnChooseFile = new JButton("Choose a File");
+
 		btnSearchFile = new JButton("Search File");
 		searchTextField = new JTextField(20);
-		Border searchBorder = BorderFactory.createTitledBorder("Input File Name");
+		Border searchBorder = BorderFactory.createTitledBorder("Input Server File Name");
 		searchTextField.setBorder(searchBorder);
 
 		btnDownload = new JButton("Download recently searched file");
 		downloadTextField = new JTextField(20);
 		Border downloadBorder = BorderFactory.createTitledBorder("Search File Name to Download");
+		sourceTextField = new JTextField(20);
+		sourceLabel = new JLabel("          Input Source Number");
+		Border sourceBorder = BorderFactory.createTitledBorder("Input Source Number");
+		filenameLabel = new JLabel("Input ServerFile Name");
+		
 		downloadTextField.setBorder(downloadBorder);
 		btnSearchFile2 = new JButton("Search File to Download");
 		searchTextField2 = new JTextField(20);
@@ -125,15 +141,36 @@ public class Peer {
 		loginPanel.add(peerNameLabel, BorderLayout.WEST);
         loginPanel.add(peerNameTextField, BorderLayout.CENTER);
         loginPanel.add(loginButton, BorderLayout.SOUTH);
-
+		btnChooseFile.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser fileChooser = new JFileChooser();
+				// get in ./Look for the file in the current directory
+				fileChooser.setCurrentDirectory(new File("./Look"));
+				int result = fileChooser.showOpenDialog(frame);
+				if (result == JFileChooser.APPROVE_OPTION) {
+					 Filetoregister = fileChooser.getSelectedFile();
+					
+					
+				}
+				
+			}
+		});
 		btnDownload.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String downloadFileName = searchTextField2.getText();
+				int source =0;
+				//if source text field is empty, set source = 0
+				if(sourceTextField.getText().isEmpty()){
+					source = 0;
+				}
+				else{
+					source = Integer.parseInt(sourceTextField.getText());
+				}
 				if( downloadFileName.isEmpty() ) {
 					return;
 				}
 				else {
-					download(downloadFileName, peerfunction, 0);
+					download(downloadFileName, peerfunction, source);
 				
 				}
 				searchTextField2.setText("");
@@ -156,11 +193,8 @@ public class Peer {
 			public void actionPerformed(ActionEvent e) {
 				String localFileName="";
 				String serverFileName="";
-				JFileChooser fileChooser = new JFileChooser();
-				fileChooser.setCurrentDirectory(new File("./"));
-                int result = fileChooser.showOpenDialog(frame);
-                if (result == JFileChooser.APPROVE_OPTION) {
-                    File file = fileChooser.getSelectedFile();
+               
+                    File file = Filetoregister;
                     String fileType = getFileType(file);
                     long fileSize = file.length();
                     long fileSizeKB = fileSize / 1024;
@@ -172,13 +206,13 @@ public class Peer {
 					serverFileName = fileName.substring(0, fileName.lastIndexOf('.'));}
 					else{serverFileName = serverFileNameTextField.getText();}
                     // Add file details to the table
-                    tableModel.addRow(new Object[]{fileName,serverFileName, fileSizeKB, fileType});}
+                    tableModel.addRow(new Object[]{fileName,serverFileName, fileSizeKB, fileType});
 
 				// String localFileName = filenameTextField.getText();
 				// String serverFileName = serverFileNameTextField.getText();
 				//Get localFileName and serverFileName from the FileChooser Example file 40.txt has localFileName = 40.txt and serverFileName = 40					 
-						serverFileNameTextField.setText("");
-						filenameTextField.setText("");
+						//serverFileNameTextField.setText("");
+						//filenameTextField.setText("");
 				try {
 					Publish_file(localFileName, serverFileName, peerName, peerfunction); // Assume peerName is your peer's name
 				} catch (Exception ex) {
@@ -198,7 +232,7 @@ public class Peer {
 				if (found) {
 				} else { addNotification(searchFileName + " is not found");
 				}}
-				searchTextField.setText("");
+				//searchTextField.setText("");
 			}
 		});
 		btnSearchFile2.addActionListener(new ActionListener() {
@@ -215,7 +249,7 @@ public class Peer {
 				if (found) {
 				} else { addNotification(searchFileName + " is not found");
 				}}
-				searchTextField2.setText("");
+				//searchTextField2.setText("");
 			}
 		});
 		JPanel UploadPanel = new JPanel();
@@ -276,13 +310,15 @@ public class Peer {
 		JPanel buttonPanel1 = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		JPanel buttonPanel2 = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JPanel buttonPanel = new JPanel();
-        buttonPanel2.add(clearButton);
 		buttonPanel1.add(btnMonitorFile);
 		buttonPanel1.add(btnSearchFile);
 		buttonPanel1.add(searchTextField);
-		buttonPanel2.add(btnRegister);
 		//buttonPanel.add(filenameTextField);
+		buttonPanel2.add(clearButton);
+		buttonPanel2.add(btnChooseFile);
 		buttonPanel2.add(serverFileNameTextField);
+		buttonPanel2.add(btnRegister);
+
 		buttonContainerPanel.add(buttonPanel1);
 		//buttonContainerPanel.add(buttonPanel);
 		buttonContainerPanel.add(buttonPanel2);
@@ -296,15 +332,130 @@ public class Peer {
         notificationList = new JList<>(notificationListModel);
 		 JPanel downloadPanel = new JPanel();
 		// // Let the button be on the left and the north the layout
-		// downloadPanel.setLayout(new BorderLayout());
-		// JPanel downloadContainerPanel = new JPanel();
-		// downloadContainerPanel.setLayout(new BoxLayout(downloadContainerPanel, BoxLayout.Y_AXIS));
-		 downloadPanel.add(searchTextField2, BorderLayout.NORTH);
-		 downloadPanel.add(btnSearchFile2);
-		 downloadPanel.add(btnDownload, BorderLayout.CENTER);
+		//downloadPanel.setLayout(new BorderLayout());
+		// JPanel buttonContainerPanel2 = new JPanel();
+        // buttonContainerPanel2.setLayout(new BoxLayout(buttonContainerPanel, BoxLayout.X_AXIS));
+		// JPanel buttonPanel3 = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		// JPanel buttonPanel4 = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		// buttonPanel3.add(filenameLabel);
+		// buttonPanel3.add(searchTextField2, BorderLayout.NORTH);
+		// buttonPanel3.add(btnSearchFile2);
+
+		// buttonPanel4.add(sourceLabel);
+		// buttonPanel4.add(sourceTextField);
+		// buttonPanel4.add(btnDownload, BorderLayout.CENTER);
+
+		downloadPanel.add(filenameLabel);
+		downloadPanel.add(searchTextField2, BorderLayout.NORTH);
+		downloadPanel.add(btnSearchFile2);
+
+		 downloadPanel.add(sourceLabel);
+		 downloadPanel.add(sourceTextField);
+		 downloadPanel.add(btnDownload, BorderLayout.NORTH);
+		// buttonContainerPanel2.add(buttonPanel3);
+		// buttonContainerPanel2.add(buttonPanel4);
+		// downloadPanel.add(buttonContainerPanel2);
+
 
 		// downloadPanel.add(downloadContainerPanel, BorderLayout.CENTER);
-		
+		JPanel terminalPanel = new JPanel();
+        terminalPanel.setLayout(new BorderLayout());
+        terminalTextOutput = new JTextArea();
+        terminalTextOutput.setEditable(false);
+        terminalTextInput = new JTextField(50);
+        JLabel terminalLabel = new JLabel("Enter command:");
+        JPanel termPanel = new JPanel();
+        termPanel.setLayout(new FlowLayout());
+        termPanel.add(terminalLabel);
+        termPanel.add(terminalTextInput);
+        terminalPanel.add(termPanel, BorderLayout.NORTH);
+        JScrollPane terminalScrollPane = new JScrollPane(terminalTextOutput);
+        terminalPanel.add(terminalScrollPane, BorderLayout.CENTER);
+        terminalPanel.add(terminalTextOutput, BorderLayout.CENTER);
+		terminalTextInput.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+				String command = terminalTextInput.getText();
+				if(command.startsWith("publish")){
+					if(command.length() < 8){
+						terminalTextOutput.append("-> Invalid command\n");
+					}
+					else{
+						//When user input publish  lname fname with lname is the file name and fname is the server file name
+						String[] commandArray = command.split(" ");
+						String fileName = commandArray[1];
+						String serverFileName = commandArray[2];
+						//Publish the file
+						Publish_file(fileName, serverFileName, serverFileName, peerfunction);
+						//show File download.png is Do_registered as download download.png is the file name and Do_registered is the server file name
+						terminalTextOutput.append("-> File " + fileName + " is registered as " + serverFileName + "\n");
+						
+						
+
+					}}
+					if(command.startsWith("fetch")){
+						if(command.length() < 6){
+							terminalTextOutput.append("-> Invalid command\n");
+						}
+						else{
+							//When user input publish  lname fname with lname is the file name and fname is the server file name
+							String[] commandArray = command.split(" ");
+							String fileName = commandArray[1];
+							//Fetch the file
+							//Fetch_file(fileName, peerfunction);
+							//Use search_thread to search for the file if not found append to terminalTextOutput
+							//if found use dowwnload function to download the file
+							boolean found = searchThread(fileName, peerfunction);
+							if(!found){
+								terminalTextOutput.append("File not found\n");
+							}
+							else{
+								//Download the file
+								
+								//Show Start receiving...
+								// Start receiving...
+								// display file 4.txt
+								// Fail
+								// Finish receive:./Look/4.txt
+
+								
+								terminalTextOutput.append("-> Start receiving...\n");
+								terminalTextOutput.append("display file " + fileName + "\n");
+								download(fileName, peerfunction,0);
+								terminalTextOutput.append("Finish receive:./Look/" + fileName + "\n");
+								
+							}
+
+
+						}
+					}
+					//Input to no command
+				terminalTextInput.setText("");
+				
+            }
+        });
+			// @Override
+            // public void actionPerformed(ActionEvent e) {
+			// 	String command = terminalTextInput.getText();
+			// 	if(command.startsWith("publish")){
+			// 		//When user input publish  lname fname with lname is the file name and fname is the server file name
+			// 		if(command.length() < 8){
+			// 			terminalTextOutput.append("Invalid command\n");
+			// 		}
+			// 		else{
+			// 			String[] commandArray = command.split(" ");
+			// 			String fileName = commandArray[1];
+			// 			String serverFileName = commandArray[2];
+			// 		String[] commandArray = command.split(" ");
+
+
+				
+
+
+
+			
+	
+	
         JScrollPane noteScrollPane = new JScrollPane(notificationList);
         notificationPanel.add(noteScrollPane, BorderLayout.CENTER);
         ClearButton = new JButton("Clear");
@@ -319,6 +470,8 @@ public class Peer {
         tabbedPane.addTab("Notification",resizedIcon_Notification ,notificationPanel);
         tabbedPane.addTab("Upload", uploadResizedIcon,mainPanel);
 		tabbedPane.addTab("Download", downloadResizedIcon,downloadPanel);
+		tabbedPane.addTab("Terminal", terminalPanel);
+
 		nframe.getContentPane().add(loginPanel);
 
 		loginButton.addActionListener(new ActionListener() {
@@ -672,7 +825,7 @@ public class Peer {
 	 peerInstance.initializeGUI(peerfunction);
 	    ServerSocket server = null;
 		PingClient pingclient = new PingClient(Info_Peer.local.pingPort);
-		pingclient.start();
+		//pingclient.start();
 		WrThread wrThread = new WrThread(Info_Peer.local.path, peerfunction);
 		wrThread.start();
 	    try{
@@ -680,6 +833,7 @@ public class Peer {
 	    	System.out.println("\n Peer  started!");
 //	    	System.out.println(server);
 	    	new PThread(server);
+		//peerInstance.do_it(peerfunction);
 	    }catch(IOException e){
 	    	e.printStackTrace();
 	    }
@@ -745,6 +899,8 @@ class DThread extends Thread{
 				//Print to GUI
 				Peer.addNotification("Start receiving file " + fileName);
 				Peer.addNotification("display file " + fileName);
+				//Print to the terminal tab of GUI
+
 
                 while ((length = dis.read(inputByte, 0, inputByte.length)) > 0) {  
                     fos.write(inputByte, 0, length);  
