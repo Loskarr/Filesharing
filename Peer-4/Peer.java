@@ -1,532 +1,37 @@
 
 
 
-import javax.management.monitor.Monitor;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-//import java.lang.foreign.AddressLayout;
 import java.io.*;
 import java.net.*;
-import java.nio.file.AccessDeniedException;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import javax.swing.table.DefaultTableModel;
-import javax.swing.tree.TreeNode;
-import javax.swing.border.Border;
-import javax.swing.border.TitledBorder;
 
 public class Peer {
 	
 	/* 
 	 *  and register all files in the local file list.
 	 */
-	private JFrame nframe;
-	private JFrame frame;
-    private JTable table;
-    private static DefaultTableModel tableModel;
-    private JList<String> notificationList;
-    private static DefaultListModel<String> notificationListModel;
-    private JButton ClearButton;
-
-	private JLabel peerNameLabel;
-    private JTextField peerNameTextField;
-    private JButton loginButton;
-
-	private JButton btnDownload;
-	private static DefaultListModel<String> downloadListModel;
-
-
-    private JButton btnRegister;
-    private JButton btnMonitorFile;
-    private JButton btnSearchFile;
-	private JButton btnSearchFile2;
-	private JButton signup;
-	private JButton btnChooseFile;
-
-    private JTextField searchTextField;
-	private JTextField searchTextField2;
-    private JTextField filenameTextField;
-    private JTextField serverFileNameTextField;
-	private JTextField signupTextField;
-	private JTextField downloadTextField;
-	private JTextField terminalTextInput;
-    private JTextArea terminalTextOutput;
-	private JTextField sourceTextField;
-	private JLabel sourceLabel;
-	private JLabel filenameLabel;
-	public String peerName;
-	public File Filetoregister;
-
-	//register all files in the local file list.
-	public static void Monitor_file(String path, String pname, procedure peerfunction){
-		 File file = new File(path);
-		// //Get all files in the path
-		File[] files = file.listFiles();
+	public static void Monitor_file(String path, procedure peerfunction){
+		File file = new File(path);
 		String test[];
 		test = file.list();
-		for(int i = 0; i<files.length; i++){	
-			String fileType = getFileType(files[i]);
-			long fileSize = files[i].length();
-			long fileSizeKB = fileSize / 1024;
-			String fileName = files[i].getName();
-			String localFileName = fileName;
-			String serverFileName = fileName.substring(0, fileName.lastIndexOf('.'));
-			tableModel.addRow(new Object[]{fileName,fileName, fileSizeKB, fileType});
-	}
-		
-		
 		if(test.length!=0){
 			for(int i = 0; i<test.length; i++){
-			Thread_for_register(test[i],test[i],pname,peerfunction);
-
+			Thread_for_register(test[i],test[i],peerfunction);
 			}
 		}
 	}
-	//Create a GUI for peer
-	public  void initializeGUI(procedure peerfunction) {
-		nframe = new JFrame("Peer Application");
-		nframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        nframe.setTitle("BK File Sharing");
-        nframe.setSize(1000, 1000);
-		ImageIcon img = new ImageIcon("hcmut.png");
-		ImageIcon icon_Notification = new ImageIcon("NoteIcon.jpg");
-		ImageIcon uploadIcon = new ImageIcon("Upload.png");
-		ImageIcon downloadIcon = new ImageIcon("download.png");
-		Image image_Notification = icon_Notification.getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH);
-		Image uploadImage = uploadIcon.getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH);
-		Image downloadImage = downloadIcon.getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH);
-		ImageIcon resizedIcon_Notification = new ImageIcon(image_Notification);
-		ImageIcon uploadResizedIcon = new ImageIcon(uploadImage);
-		ImageIcon downloadResizedIcon = new ImageIcon(downloadImage);
-		nframe.setIconImage(img.getImage());
-		
-		
-		signup = new JButton("Signup");
-		signupTextField = new JTextField(20);
-        btnRegister = new JButton("Register a file");
-        filenameTextField = new JTextField(20);
-		Border filenameBorder = BorderFactory.createTitledBorder("Input Server File Name");
-		filenameTextField.setBorder(filenameBorder);
-		serverFileNameTextField = new JTextField(20);
-		Border serverFileNameBorder = BorderFactory.createTitledBorder("Input Server File Name");
-		serverFileNameTextField.setBorder(serverFileNameBorder);
-		btnMonitorFile = new JButton("Register All Files");
-		btnChooseFile = new JButton("Choose a File");
-
-		btnSearchFile = new JButton("Search File");
-		searchTextField = new JTextField(20);
-		Border searchBorder = BorderFactory.createTitledBorder("Input Server File Name");
-		searchTextField.setBorder(searchBorder);
-
-		btnDownload = new JButton("Download recently searched file");
-		downloadTextField = new JTextField(20);
-		Border downloadBorder = BorderFactory.createTitledBorder("Search File Name to Download");
-		sourceTextField = new JTextField(20);
-		sourceLabel = new JLabel("          Input Source Number");
-		Border sourceBorder = BorderFactory.createTitledBorder("Input Source Number");
-		filenameLabel = new JLabel("Input ServerFile Name");
-		
-		downloadTextField.setBorder(downloadBorder);
-		btnSearchFile2 = new JButton("Search File to Download");
-		searchTextField2 = new JTextField(20);
-
-        JTabbedPane tabbedPane = new JTabbedPane();
-		JPanel loginPanel = new JPanel(new BorderLayout());
-        peerNameLabel = new JLabel("Peer Name: ");
-        peerNameTextField = new JTextField(20);
-        loginButton = new JButton("Login");
-		loginPanel.add(peerNameLabel, BorderLayout.WEST);
-        loginPanel.add(peerNameTextField, BorderLayout.CENTER);
-        loginPanel.add(loginButton, BorderLayout.SOUTH);
-		btnChooseFile.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				JFileChooser fileChooser = new JFileChooser();
-				// get in ./Look for the file in the current directory
-				fileChooser.setCurrentDirectory(new File("./Look"));
-				int result = fileChooser.showOpenDialog(frame);
-				if (result == JFileChooser.APPROVE_OPTION) {
-					 Filetoregister = fileChooser.getSelectedFile();
-					
-					
-				}
-				
-			}
-		});
-		btnDownload.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String downloadFileName = searchTextField2.getText();
-				int source =0;
-				//if source text field is empty, set source = 0
-				if(sourceTextField.getText().isEmpty()){
-					source = 0;
-				}
-				else{
-					source = Integer.parseInt(sourceTextField.getText());
-				}
-				if( downloadFileName.isEmpty() ) {
-					return;
-				}
-				else {
-					download(downloadFileName, peerfunction, source);
-				
-				}
-				searchTextField2.setText("");
-			}
-		});
-		btnMonitorFile.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				//Get Info_Peer.local.path
-				// How can i get the path from Info_Peer.local.path?
-				// 				//String path = filenameTextField.getText(); // Assume this is the path to monitor
-				try {
-					Monitor_file(Info_Peer.local.path, peerName, peerfunction); // Assume peerName is your peer's name
-					
-				} catch (Exception ex) {
-				}
-			}
-		});
-		btnRegister.addActionListener(new ActionListener() {
-			
-			public void actionPerformed(ActionEvent e) {
-				String localFileName="";
-				String serverFileName="";
-               
-                    File file = Filetoregister;
-                    String fileType = getFileType(file);
-                    long fileSize = file.length();
-                    long fileSizeKB = fileSize / 1024;
-                    String fileName = file.getName();
-					localFileName = fileName;
-					//Server file name is local file name without extension
-					//if serverfilenametextfield is empty, server file name is local file name without extension else server file name is serverfilenametextfield
-					if(serverFileNameTextField.getText().isEmpty()){
-					serverFileName = fileName.substring(0, fileName.lastIndexOf('.'));}
-					else{serverFileName = serverFileNameTextField.getText();}
-                    // Add file details to the table
-                    tableModel.addRow(new Object[]{fileName,serverFileName, fileSizeKB, fileType});
-
-				// String localFileName = filenameTextField.getText();
-				// String serverFileName = serverFileNameTextField.getText();
-				//Get localFileName and serverFileName from the FileChooser Example file 40.txt has localFileName = 40.txt and serverFileName = 40					 
-						//serverFileNameTextField.setText("");
-						//filenameTextField.setText("");
-				try {
-					Publish_file(localFileName, serverFileName, peerName, peerfunction); // Assume peerName is your peer's name
-				} catch (Exception ex) {
-				}
-			}
-		});
-		btnSearchFile.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				//catch the fault here if searchTextField.getText() is empty
-
-				String searchFileName = searchTextField.getText();
-				if( searchFileName.isEmpty() ) {
-					return;
-				}
-				else {
-				boolean found = searchThread(searchFileName, peerfunction);
-				if (found) {
-				} else { addNotification(searchFileName + " is not found");
-				}}
-				//searchTextField.setText("");
-			}
-		});
-		btnSearchFile2.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				//catch the fault here if searchTextField.getText() is empty
-
-
-				String searchFileName = searchTextField2.getText();
-				if( searchFileName.isEmpty() ) {
-					return;
-				}
-				else {
-				boolean found = searchThread(searchFileName, peerfunction);
-				if (found) {
-				} else { addNotification(searchFileName + " is not found");
-				}}
-				//searchTextField2.setText("");
-			}
-		});
-		JPanel UploadPanel = new JPanel();
-        UploadPanel.setLayout(new BorderLayout());
-        // Create table with columns: Type, Size, Name, and Tick
-		String[] columnNames = {"Filename","Serverfilename", "Size(kB)", "Type"};
-        
-        
-        tableModel = new DefaultTableModel(columnNames, 0);
-
-        table = new JTable(tableModel);
-
-    
-        // Create button for file upload
-       // JButton uploadButton = new JButton("Upload File");
-        // uploadButton.addActionListener(new ActionListener() {
-        //     @Override
-        //     public void actionPerformed(ActionEvent e) {
-        //         JFileChooser fileChooser = new JFileChooser();
-        //         int result = fileChooser.showOpenDialog(frame);
-        //         if (result == JFileChooser.APPROVE_OPTION) {
-        //             File file = fileChooser.getSelectedFile();
-        //             String fileType = getFileType(file);
-        //             long fileSize = file.length();
-        //             long fileSizeKB = fileSize / 1024;
-        //             String fileName = file.getName();
-    
-        //             // Add file details to the table
-        //             tableModel.addRow(new Object[]{fileName, fileSizeKB, fileType});
-        //         }
-        //     }
-        // });
-		JPanel panel = new JPanel(new BorderLayout());
-        panel.add(new JScrollPane(table), BorderLayout.CENTER);
-      //  panel.add(uploadButton, BorderLayout.SOUTH);
-    
-        // Create buttons for "Register" and "Clear"
-        JButton registerButton = new JButton("Register");
-        registerButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Implement the logic for registering the selected files
-            }
-        });
-    
-        JButton clearButton = new JButton("Clear");
-        clearButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Implement the logic for clearing the table
-                tableModel.setRowCount(0); // Remove all rows from the table
-            }
-        });
-    
-        // Create panel to hold the "Register" and "Clear" buttons
-		JPanel buttonContainerPanel = new JPanel();
-        buttonContainerPanel.setLayout(new BoxLayout(buttonContainerPanel, BoxLayout.Y_AXIS));
-		JPanel buttonPanel1 = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		JPanel buttonPanel2 = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JPanel buttonPanel = new JPanel();
-		buttonPanel1.add(btnMonitorFile);
-		buttonPanel1.add(btnSearchFile);
-		buttonPanel1.add(searchTextField);
-		//buttonPanel.add(filenameTextField);
-		buttonPanel2.add(clearButton);
-		buttonPanel2.add(btnChooseFile);
-		buttonPanel2.add(serverFileNameTextField);
-		buttonPanel2.add(btnRegister);
-
-		buttonContainerPanel.add(buttonPanel1);
-		//buttonContainerPanel.add(buttonPanel);
-		buttonContainerPanel.add(buttonPanel2);
-
-		JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.add(panel, BorderLayout.CENTER);
-        mainPanel.add(buttonContainerPanel, BorderLayout.SOUTH);
-        JPanel notificationPanel = new JPanel();
-        notificationPanel.setLayout(new BorderLayout());
-        notificationListModel = new DefaultListModel<>();
-        notificationList = new JList<>(notificationListModel);
-		 JPanel downloadPanel = new JPanel();
-		// // Let the button be on the left and the north the layout
-		//downloadPanel.setLayout(new BorderLayout());
-		// JPanel buttonContainerPanel2 = new JPanel();
-        // buttonContainerPanel2.setLayout(new BoxLayout(buttonContainerPanel, BoxLayout.X_AXIS));
-		// JPanel buttonPanel3 = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		// JPanel buttonPanel4 = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		// buttonPanel3.add(filenameLabel);
-		// buttonPanel3.add(searchTextField2, BorderLayout.NORTH);
-		// buttonPanel3.add(btnSearchFile2);
-
-		// buttonPanel4.add(sourceLabel);
-		// buttonPanel4.add(sourceTextField);
-		// buttonPanel4.add(btnDownload, BorderLayout.CENTER);
-
-		downloadPanel.add(filenameLabel);
-		downloadPanel.add(searchTextField2, BorderLayout.NORTH);
-		downloadPanel.add(btnSearchFile2);
-
-		 downloadPanel.add(sourceLabel);
-		 downloadPanel.add(sourceTextField);
-		 downloadPanel.add(btnDownload, BorderLayout.NORTH);
-		// buttonContainerPanel2.add(buttonPanel3);
-		// buttonContainerPanel2.add(buttonPanel4);
-		// downloadPanel.add(buttonContainerPanel2);
-
-
-		// downloadPanel.add(downloadContainerPanel, BorderLayout.CENTER);
-		JPanel terminalPanel = new JPanel();
-        terminalPanel.setLayout(new BorderLayout());
-        terminalTextOutput = new JTextArea();
-        terminalTextOutput.setEditable(false);
-        terminalTextInput = new JTextField(50);
-        JLabel terminalLabel = new JLabel("Enter command:");
-        JPanel termPanel = new JPanel();
-        termPanel.setLayout(new FlowLayout());
-        termPanel.add(terminalLabel);
-        termPanel.add(terminalTextInput);
-        terminalPanel.add(termPanel, BorderLayout.NORTH);
-        JScrollPane terminalScrollPane = new JScrollPane(terminalTextOutput);
-        terminalPanel.add(terminalScrollPane, BorderLayout.CENTER);
-        terminalPanel.add(terminalTextOutput, BorderLayout.CENTER);
-		terminalTextInput.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-				String command = terminalTextInput.getText();
-				if(command.startsWith("publish")){
-					if(command.length() < 8){
-						terminalTextOutput.append("-> Invalid command\n");
-					}
-					else{
-						//When user input publish  lname fname with lname is the file name and fname is the server file name
-						String[] commandArray = command.split(" ");
-						String fileName = commandArray[1];
-						String serverFileName = commandArray[2];
-						//Publish the file
-						Publish_file(fileName, serverFileName, serverFileName, peerfunction);
-						//show File download.png is Do_registered as download download.png is the file name and Do_registered is the server file name
-						terminalTextOutput.append("-> File " + fileName + " is registered as " + serverFileName + "\n");
-						
-						
-
-					}}
-					if(command.startsWith("fetch")){
-						if(command.length() < 6){
-							terminalTextOutput.append("-> Invalid command\n");
-						}
-						else{
-							//When user input publish  lname fname with lname is the file name and fname is the server file name
-							String[] commandArray = command.split(" ");
-							String fileName = commandArray[1];
-							//Fetch the file
-							//Fetch_file(fileName, peerfunction);
-							//Use search_thread to search for the file if not found append to terminalTextOutput
-							//if found use dowwnload function to download the file
-							boolean found = searchThread(fileName, peerfunction);
-							if(!found){
-								terminalTextOutput.append("File not found\n");
-							}
-							else{
-								//Download the file
-								
-								//Show Start receiving...
-								// Start receiving...
-								// display file 4.txt
-								// Fail
-								// Finish receive:./Look/4.txt
-
-								
-								terminalTextOutput.append("-> Start receiving...\n");
-								terminalTextOutput.append("display file " + fileName + "\n");
-								download(fileName, peerfunction,0);
-								terminalTextOutput.append("Finish receive:./Look/" + fileName + "\n");
-								
-							}
-
-
-						}
-					}
-					//Input to no command
-				terminalTextInput.setText("");
-				
-            }
-        });
-			// @Override
-            // public void actionPerformed(ActionEvent e) {
-			// 	String command = terminalTextInput.getText();
-			// 	if(command.startsWith("publish")){
-			// 		//When user input publish  lname fname with lname is the file name and fname is the server file name
-			// 		if(command.length() < 8){
-			// 			terminalTextOutput.append("Invalid command\n");
-			// 		}
-			// 		else{
-			// 			String[] commandArray = command.split(" ");
-			// 			String fileName = commandArray[1];
-			// 			String serverFileName = commandArray[2];
-			// 		String[] commandArray = command.split(" ");
-
-
-				
-
-
-
-			
 	
-	
-        JScrollPane noteScrollPane = new JScrollPane(notificationList);
-        notificationPanel.add(noteScrollPane, BorderLayout.CENTER);
-        ClearButton = new JButton("Clear");
-        ClearButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                notificationListModel.clear();
-            }
-        });
-        notificationPanel.add(ClearButton, BorderLayout.SOUTH);
-
-        tabbedPane.addTab("Notification",resizedIcon_Notification ,notificationPanel);
-        tabbedPane.addTab("Upload", uploadResizedIcon,mainPanel);
-		tabbedPane.addTab("Download", downloadResizedIcon,downloadPanel);
-		tabbedPane.addTab("Terminal", terminalPanel);
-
-		nframe.getContentPane().add(loginPanel);
-
-		loginButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Implement the logic for registering the selected files
-                peerName = peerNameTextField.getText();
-				Thread_for_signup(peerName, peerfunction);
-                if (peerName != null && !peerName.isEmpty()) {
-                    nframe.remove(loginPanel);
-                    nframe.revalidate();
-                    nframe.repaint();
-                    nframe.setSize(800, 800);
-                    nframe.getContentPane().add(tabbedPane);
-                }
-            }
-        });
-		nframe.pack();
-        nframe.setVisible(true);
-
-
-
-	}
 	/*
 	 *  Register the file to the index server
-	 */ public static String getFileType(File file) {
-        String name = file.getName();
-        int lastIndexOfDot = name.lastIndexOf(".");
-        if (lastIndexOfDot != -1 && lastIndexOfDot != name.length() - 1) {
-            return name.substring(lastIndexOfDot + 1);
-        }
-        return "";
-    }
-	public static void addNotification(String notification) {
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				notificationListModel.addElement(notification);
-			}
-		});
-		
-        // ... Add other components to panel 
+	 */ 
+	
+	
+	public static void Publish_file(String fileName, String serverName, procedure peerfunction){
+			Thread_for_register(fileName,serverName,peerfunction);
 	}
-	
-	
-	public static void Publish_file(String fileName, String serverName, String pname, procedure peerfunction){
-		File file = new File(Info_Peer.local.path + File.separator + fileName);
-		if (!file.exists()) {
-			System.out.println("File '" + fileName + "' not exist.");
-			return;
-		}
-		Thread_for_register(fileName, serverName, pname, peerfunction);
-		//Add notification like File 14.txt is Do_registered as 14
-			}
 
-	public static void Thread_for_register(String fileName, String serverName, String pname, procedure peerfunction){
+	public static void Thread_for_register(String fileName,String serverName, procedure peerfunction){
 		Socket socket = null;
 		StringBuffer sb = new StringBuffer("register ");
 		try{			
@@ -540,42 +45,10 @@ public class Peer {
 			
 			// register to the server end
 			// Send register message
-			sb.append(pname);
-			sb.append(" "+Info_Peer.local.ID);
+			sb.append(Info_Peer.local.ID);
 			sb.append(" "+fileName);
 			sb.append(" "+serverName);
 			pw.println(sb.toString());
-
-		}catch (IOException e) 
-		{
-			e.printStackTrace();
-		}
-		finally{
-			try{
-				if(socket!=null){
-					socket.close();
-				}
-			}catch(IOException e){
-				e.printStackTrace();
-			}
-		}
-		addNotification("File "+fileName+" is registered as "+serverName) ;	
-	}
-
-	public static void Thread_for_signup(String name, procedure peerfunction){
-		Socket socket = null;
-		StringBuffer sb = new StringBuffer("signup ");
-		try{			
-			peerSocket peersocket = new peerSocket();
-			socket = peersocket.socket;
-			BufferedReader br = peersocket.getReader(socket);
-			PrintWriter pw = peersocket.getWriter(socket);
-			sb.append(name);
-			sb.append(" "+Info_Peer.local.IP);
-			sb.append(" request");
-			sb.append(" connect");
-			pw.println(sb.toString());
-			System.out.println(br.readLine());
 
 		}catch (IOException e) 
 		{
@@ -598,17 +71,11 @@ public class Peer {
 		boolean exit = false;
 		// Store file name
 		String fileName = null;
-		String serverName = null;
-		String pname = null;
-		String pass = null;
+		String serverName = null;	
 		
 		BufferedReader localReader = new BufferedReader(new InputStreamReader(System.in));
-
-		System.out.println("Enter peer name:");
-		pname = localReader.readLine();
-		//System.out.println(Info_Peer.local.name+" "+Info_Peer.local.IP);
-		Thread_for_signup(pname, peerfunction);
-		//Usage Interface
+		
+		// Usage Interface
 		while(!exit)
 		{
 			System.out.println("\n1 Register all file\n2 Search a file\n3 Register a file\n4 Exit");
@@ -617,7 +84,7 @@ public class Peer {
 			{
 			case 1:
 				{	
-					 Monitor_file(Info_Peer.local.path,pname,peerfunction);				
+					 Monitor_file(Info_Peer.local.path,peerfunction);				
 						
 				break;					
 				}
@@ -637,7 +104,7 @@ public class Peer {
 							{
 								System.out.println("\nChoose source number (0-...)");
 								int pn = Integer.parseInt(localReader.readLine());
-								download(fileName, peerfunction, pn);					
+								download(fileName, peerfunction, 0);					
 								break;
 							}
 						default:
@@ -654,7 +121,7 @@ public class Peer {
 					// Search file through index server
 					System.out.println("Enter the server file name:");
 					serverName = localReader.readLine();
-					Publish_file( fileName, serverName, pname, peerfunction);
+					Publish_file( fileName, serverName, peerfunction);
 					break;
 				}
 			case 4:
@@ -674,6 +141,10 @@ public class Peer {
 
 	public static void Thread_for_unregister(String fileName, procedure peerfunction){
 		Socket socket = null;
+		
+		System.out.println("in");
+
+
 		StringBuffer sb = new StringBuffer("unregister ");
 		try{			
 			peerSocket peersocket = new peerSocket();
@@ -686,8 +157,7 @@ public class Peer {
 			
 			// Unregister to the server end
 			// Send unregister message
-			sb.append("at");
-			sb.append(" "+Info_Peer.local.ID);
+			sb.append(Info_Peer.local.ID);
 			sb.append(" "+fileName);
 			
 			pw.println(sb.toString());
@@ -723,8 +193,7 @@ public class Peer {
 			PrintWriter pw = peersocket.getWriter(socket);
 			
 			// Send search message
-			sb.append("request");
-			sb.append(" "+Info_Peer.local.ID);
+			sb.append(Info_Peer.local.ID);
 			sb.append(" "+fileName);
 			pw.println(sb.toString());
 			
@@ -736,8 +205,8 @@ public class Peer {
 			// If find file in some peers, output their address
 			if((find = peerfunction.search(fileName))== true){
 				for(int i=0; i<Info_Peer.dest.destPath.size(); i++){
-					//System.out.println(Info_Peer.dest.destLname.get(i) +" with name "+ fileName+" is found on "+Info_Peer.dest.destPath.get(i)+" ("+i+")");
-				   addNotification(Info_Peer.dest.destLname.get(i) +" with name "+ fileName+" is found on Client: "+Info_Peer.dest.destPname.get(i)+" ("+i+")");				}
+					System.out.println(Info_Peer.dest.destLname.get(i) +" with name "+ fileName+" is found on "+Info_Peer.dest.destPath.get(i)+" ("+i+")");
+				}
 			}
 
 		}catch (IOException e) {
@@ -760,6 +229,7 @@ public class Peer {
 	 *  Used to download file from other clients
 	 */
 	public void download(String fileName, procedure peerfunction, int pn){
+		System.out.println(fileName+" "+Info_Peer.dest.destLname.get(pn)+"\n");
 		String IP = null;
 		String folder = null;
 		int port = 0;
@@ -812,40 +282,20 @@ public class Peer {
 	
 	
 	public static void main(String args[])throws IOException{
-
-		SwingUtilities.invokeLater(new Runnable() {
-
-            public void run() {
-				try {
-
 	    procedure peerfunction = new procedure();
 	    peerfunction.initialize();
-	 // Monitor_file(Info_Peer.local.path,peerfunction);
-	 Peer peerInstance = new Peer();
-	 peerInstance.initializeGUI(peerfunction);
+	 //   Monitor_file(Info_Peer.local.path,peerfunction);
 	    ServerSocket server = null;
-		PingClient pingclient = new PingClient(Info_Peer.local.pingPort);
-		//pingclient.start();
 		WrThread wrThread = new WrThread(Info_Peer.local.path, peerfunction);
-		wrThread.start();
 	    try{
 	    	server = new ServerSocket(Info_Peer.local.serverPort);
 	    	System.out.println("\n Peer  started!");
 //	    	System.out.println(server);
 	    	new PThread(server);
-		//peerInstance.do_it(peerfunction);
 	    }catch(IOException e){
 	    	e.printStackTrace();
 	    }
-		//new Peer().do_it(peerfunction);
-	} catch (Exception e) {
-		System.err.println("Error setting up the server: " + e.getMessage());
-		e.printStackTrace();
-		System.exit(1); // Thoát nếu không thể start server
-	}
- 
-}
-});
+		new Peer().do_it(peerfunction);
 
 	}
 }
@@ -896,18 +346,11 @@ class DThread extends Thread{
                 inputByte = new byte[1024];     
                 System.out.println("\nStart receiving..."); 
                 System.out.println("display file " + fileName);
-				//Print to GUI
-				Peer.addNotification("Start receiving file " + fileName);
-				Peer.addNotification("display file " + fileName);
-				//Print to the terminal tab of GUI
-
-
                 while ((length = dis.read(inputByte, 0, inputByte.length)) > 0) {  
                     fos.write(inputByte, 0, length);  
                     fos.flush();      
                 }  
                 System.out.println("Finish receive:"+filePath);  
-				Peer.addNotification("Finish receive:"+filePath); 
             } finally {  
                 if (fos != null)  
                     fos.close();  
@@ -922,30 +365,6 @@ class DThread extends Thread{
 	}
 }
 
-
-class PingClient extends Thread {
-    private int port;
-
-    public PingClient(int port) {
-        this.port = port;
-    }
-
-    @Override
-    public void run() {
-        try (ServerSocket serverSocket = new ServerSocket(port)) {
-
-            while (true) {
-                try (Socket clientSocket = serverSocket.accept()) {
-                    System.out.println("Received ping request from Server");
-
-                    // Handle the ping request here (e.g., respond or perform some action)
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-}
 /*
  *  Watch file
  *  Listening to the local file folder
@@ -959,6 +378,8 @@ class WrThread extends Thread {
 	public WrThread(String path,procedure peerfunction){
 		this.path = path;
 		this.peerfunction = peerfunction;
+		
+		start();
 	}
 	
 	public void run(){
@@ -981,7 +402,7 @@ class WrThread extends Thread {
 				}
 			}
 			
-		}, 2000, 200);
+		}, 1000, 100);
 		     
 	}
 }
@@ -1019,7 +440,7 @@ class peerSocket{
 
 	public peerSocket()throws IOException{
 		pf.initialize();
-		socket = new Socket(Info_Peer.local.serverIP,Info_Peer.local.clientPort);
+		socket = new Socket(Info_Peer.local.IP,Info_Peer.local.clientPort);
 	}
 	
 	public peerSocket(String IP, int port)throws IOException{
