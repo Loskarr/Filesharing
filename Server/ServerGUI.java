@@ -7,6 +7,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.table.DefaultTableModel;
+import java.util.Scanner;
 class indexServer{
 	public ServerSocket serversocket;
 	public int port;
@@ -42,6 +43,8 @@ class ServerGUI extends JFrame{
     private static DefaultListModel<String> noteListModel; // notification list model of notification panel
    
     private JTextField peerNameTextField;
+    private JTextField terminalTextInput;
+    private JTextArea terminalTextOutput;
 
     private JButton pingButton;
     private JButton discoverButton;
@@ -129,15 +132,51 @@ class ServerGUI extends JFrame{
     public void actionPerformed(ActionEvent e) {
         String peerName = peerNameTextField.getText();
         if (peerName != null && !peerName.isEmpty()) {
+            boolean isUserExist = false;
+            try {
+                File file = new File("User.txt");
+                Scanner scanner = new Scanner(file);
+                while (scanner.hasNextLine()) {
+                    String line = scanner.nextLine();
+                    if (line.contains(peerName)) {
+                        isUserExist = true;
+                        break;
+                    }
+                }
+                scanner.close();
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
+            if(isUserExist == false){
+                String notification = "Peer " + peerName + " is not registered.";
+                notificationListModel.addElement(notification);
+                return;
+            }
+            // Read the IP address from the User.txt file
+            String termIpAddress = null;
+            try {
+                File file = new File("User.txt");
+                Scanner scanner = new Scanner(file);
+                while (scanner.hasNextLine()) {
+                    String line = scanner.nextLine();
+                    if (line.contains(peerName)) {
+                        termIpAddress = line.split(" ")[1];
+                        break;
+                    }
+                }
+                scanner.close();
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
             String ipAddress = serverfunction.toIP.get(peerName);
             if (ipAddress == null) {
-                String notification = "Peer " + peerName + " is not registered.";
+                String notification = "Peer " + peerName + " at IP "+termIpAddress+" is not online.";
                 notificationListModel.addElement(notification);
                 return;
             }
             int defaultPingPort = 8510;
             boolean isOnline = serverfunction.pingPeer(ipAddress, defaultPingPort);
-            if (isOnline) {
+            if (isOnline == true) {
                 String notification = "Peer " + peerName + " at IP " + ipAddress + " is online.";
                 notificationListModel.addElement(notification);
             } else {
@@ -212,12 +251,148 @@ class ServerGUI extends JFrame{
                 }
             }
         });
-        // Code for user list table goes here
+
+
+        JPanel terminalPanel = new JPanel();
+        terminalPanel.setLayout(new BorderLayout());
+        terminalTextOutput = new JTextArea();
+        terminalTextOutput.setEditable(false);
+        terminalTextInput = new JTextField(50);
+        JLabel terminalLabel = new JLabel("Enter command:");
+        JPanel termPanel = new JPanel();
+        termPanel.setLayout(new FlowLayout());
+        termPanel.add(terminalLabel);
+        termPanel.add(terminalTextInput);
+        terminalPanel.add(termPanel, BorderLayout.NORTH);
+        JScrollPane terminalScrollPane = new JScrollPane(terminalTextOutput);
+        terminalPanel.add(terminalScrollPane, BorderLayout.CENTER);
+        terminalPanel.add(terminalTextOutput, BorderLayout.CENTER);
+        terminalTextInput.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String command = terminalTextInput.getText();
+                terminalTextInput.setText("");
+                if(command.startsWith("ping")){
+                    if (command.length() < 5) {
+                        terminalTextOutput.append("@@ Invalid command.\n");
+                        return;
+                    }
+                    String peerName = command.substring(5).trim();
+                    
+                    //check have the peer name
+                    if(peerName.isEmpty()){
+                        terminalTextOutput.append(" :)) Peer name cannot be empty, type command again!\n");
+                        return;
+                    }
+                    // check if the user name is already in the user.txt
+                    boolean isUserExist = false;
+                    try {
+                        File file = new File("User.txt");
+                        Scanner scanner = new Scanner(file);
+                        while (scanner.hasNextLine()) {
+                            String line = scanner.nextLine();
+                            if (line.contains(peerName)) {
+                                isUserExist = true;
+                                break;
+                            }
+                        }
+                        scanner.close();
+                    } catch (FileNotFoundException ex) {
+                        ex.printStackTrace();
+                    }
+                    String ipAddress = serverfunction.toIP.get(peerName);
+                    String termIpAddress = null;
+                    if ( (isUserExist == false)) {
+                        terminalTextOutput.append(" :)) Peer " + peerName + " is not registered.\n");
+                        return;
+                    }
+                    // Read the IP address from the User.txt file
+                    try {
+                        File file = new File("User.txt");
+                        Scanner scanner = new Scanner(file);
+                        while (scanner.hasNextLine()) {
+                            String line = scanner.nextLine();
+                            if (line.contains(peerName)) {
+                                String[] parts = line.split(" ");
+                                termIpAddress = parts[1];
+                                // Use the ipAddress variable as needed
+                                break;
+                            }
+                        }
+                        scanner.close();
+                    } catch (FileNotFoundException ex) {
+                        ex.printStackTrace();
+                    }
+                    if (ipAddress == null) {
+                        terminalTextOutput.append(" -> Peer " + peerName + " at IP " + termIpAddress+" is offline.\n");
+                        return;
+                    }
+                    terminalTextOutput.append(" :v Pinging " + peerName + "...\n");
+                    int defaultPingPort = 8510;
+                    boolean isOnline = serverfunction.pingPeer(ipAddress, defaultPingPort);
+                    //sleep for a second
+                    if (isOnline == true) {
+                        terminalTextOutput.append("-> Peer " + peerName + " at IP " + ipAddress + " is online.\n");
+                    } else {
+                        terminalTextOutput.append("-> Peer " + peerName + " at IP " + ipAddress + " is offline.\n");
+                    }
+
+                }
+                else if(command.startsWith("discover")){
+                    if (command.length() < 9) {
+                        terminalTextOutput.append("@@ Invalid command.\n");
+                        return;
+                    }
+                    String peerName = command.substring(9).trim();
+                    if(peerName.isEmpty()){
+                        terminalTextOutput.append(" :)) Peer name cannot be empty.\n");
+                        return;
+                    }
+                    terminalTextOutput.append(":v Discovering "+peerName+" ...\n");
+                    boolean isUserExist = false;
+                    try {
+                        File file = new File("User.txt");
+                        Scanner scanner = new Scanner(file);
+                        while (scanner.hasNextLine()) {
+                            String line = scanner.nextLine();
+                            if (line.contains(peerName)) {
+                                isUserExist = true;
+                                break;
+                            }
+                        }
+                        scanner.close();
+                    } catch (FileNotFoundException ex) {
+                        ex.printStackTrace();
+                    }
+                    if(isUserExist == false){
+                        terminalTextOutput.append(" :)) Peer " + peerName + " is not registered.\n");
+                        return;
+                    }
+                    ArrayList<String> fileList = serverfunction.discoverFileList(peerName);
+                    if(fileList.size() == 0){
+                        terminalTextOutput.append("-> Peer " + peerName + " has no files.\n");
+                        return;
+                    }
+                    terminalTextOutput.append("-> Peer " + peerName + " has the following files: \n");
+                    for (String file : fileList) {
+                        terminalTextOutput.append("+ "+file + "\n");
+                    }
+                    
+                }
+                else if (command.startsWith("clear")){
+                    terminalTextOutput.setText("");
+                }  
+                else {
+                    terminalTextOutput.append("Unknown command: " + command + "\n");
+                }
+            }
+        });
+        
 
         tabbedPane.addTab("Notification",resizedIcon_Notification, notificationPanel);
         tabbedPane.addTab("Command", resizedIcon_Command, commandPanel);
         tabbedPane.addTab("User List", resizedIcon_UserIcon, userListPanel);
-
+        tabbedPane.addTab("Terminal", terminalPanel);
         getContentPane().add(tabbedPane);
 
         pack();
